@@ -9,16 +9,17 @@ class Equipment:
         """
         Initiate function for the players.
         """
+        self.name = name
         ep = pd.read_csv('equipments_db.txt', sep=',')
         if name in ep['name'].values:
-            self.damage_min = ep[ep.name == name]['damage_min'][0]
-            self.damage_max = ep[ep.name == name]['damage_max'][0]
-            self.base_crit_chance = ep[ep.name == name]['damage_min'][0]
-            self.crit_chance = ep[ep.name == name]['damage_min'][0]
-            self.crit_power = ep[ep.name == name]['damage_min'][0]
-            self.defense = ep[ep.name == name]['defense'][0]
-            self.immunity = ep[ep.name == name]['immunity'][0]
-            self.luck = ep[ep.name == name]['luck'][0]
+            self.damage_min = ep[ep.name == name]['damage_min'].values[0]
+            self.damage_max = ep[ep.name == name]['damage_max'].values[0]
+            self.base_crit_chance = ep[ep.name == name]['damage_min'].values[0]
+            self.crit_chance = ep[ep.name == name]['damage_min'].values[0]
+            self.crit_power = ep[ep.name == name]['damage_min'].values[0]
+            self.defense = ep[ep.name == name]['defense'].values[0]
+            self.immunity = ep[ep.name == name]['immunity'].values[0]
+            self.luck = ep[ep.name == name]['luck'].values[0]
         else:
             self.damage_min = 0
             self.damage_max = 0
@@ -70,6 +71,18 @@ class Player:
         equipment_db and add total attributes
 
         """
+
+    def generate_att_from_equip(self):
+        """
+        to set the attributes of this player. according to the equipments, search for every equipment in the
+        equipment_db and add total attributes
+
+        >>> player1 = Player()
+        >>> player1.set_player_equipments(['Infinity Dagger', 'Crabshell Ring', '', ''])
+        >>> player1.generate_att_from_equip()
+        >>> player1.player_att
+        [50, 70, 50, 50, 50, 8, 0, 0]
+        """
         this_damage_min = 0
         this_damage_max = 0
         this_base_crit_chance = 0
@@ -92,12 +105,6 @@ class Player:
             self.player_att = [this_damage_min, this_damage_max, this_base_crit_chance, this_crit_chance,
                                this_crit_power, this_defense, this_immunity, this_luck]
 
-    def generate_att_from_equip(self):
-        """
-
-        :return:
-        """
-
     def set_player_health_energy(self, health_energy_lis: list):
         """
         to set the health bar and energy bar, the default is 100 and 270, either bar hits zero, the round ends and
@@ -105,11 +112,13 @@ class Player:
 
         :param health_energy_lis: [health, energy]
         """
+        self.player_health_energy = health_energy_lis
+
 
 
 player1 = Player()
 print(player1.player_health_energy)
-a = 'Infinity Dagger'
+a = 'Sneakers'
 equ = Equipment(a)
 print(equ.damage_min)
 player1.set_player_equipments([a, '', '', ''])

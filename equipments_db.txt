@@ -1,3 +1,4 @@
 id,name,level,damage_min,damage_max,base_crit_chance,crit_chance,crit_power,defense,immunity,luck
 0,Infinity Dagger,16,50,70,0.06,4,0,3,0,0
 1,Sneakers,0,0,0,0,0,0,1,0,0
+2,Crabshell Ring,0,0,0,0,0,0,5,0,0
