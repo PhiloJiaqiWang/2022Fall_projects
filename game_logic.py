@@ -124,10 +124,23 @@ print(equ.damage_min)
 player1.set_player_equipments([a, '', '', ''])
 player1.set_player_att()
 print(player1.player_att)
-# class Rock:
-#
-# class Monster:
-#
+class Rock:
+    """
+    everytime the player crack rocks, it will generate different items, you can find the information here:
+    https://stardewvalleywiki.com/The_Mines#Remixed_Rewards
+    the basic logic is when we call this class in the main func, it should randomly generate an item, and the
+    probability is different in different floors. Also, we need to know the value of the item so that we can calculate
+    the total amount.
+    """
+    def __init__(self):
+
+class Monster:
+    """
+    the monsters information is here https://stardewvalleywiki.com/Monsters. It may need to use inheritance.
+    You can try to create a relatively complicated one first.
+    """
+
+
 # class Floor:
 #
 #
