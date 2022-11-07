@@ -205,9 +205,9 @@ class Floor:
             self.floor_monsters.append(monster)
 
 
-a, b = Floor(44).generate_rock_list()
-print('floor container', a)
-print('total value in this floor', b)
+aa, bb = Floor(44).generate_rock_list()
+print('floor container', aa)
+print('total value in this floor', bb)
 
 class MainGame:
     """
