@@ -125,7 +125,7 @@ print(equ.damage_min)
 player1.set_player_equipments([a, '', '', ''])
 player1.set_player_att()
 print(player1.player_att)
-class Rock:
+class Rock():
     """
     everytime the player crack rocks, it will generate different items, you can find the information here:
     https://stardewvalleywiki.com/The_Mines#Remixed_Rewards
@@ -133,14 +133,29 @@ class Rock:
     probability is different in different floors. Also, we need to know the value of the item so that we can calculate
     the total amount.
     """
+
+    # read the rock spreadsheet
     def __init__(self):
+        self.r = pd.read_csv('rock.csv')
+        self.r.set_index("item", inplace=True)
+
+    # find rock sell price
+    def rockValue(self, name):
+        value = self.r.loc[name]['price']
+        return value
+
+    # generate the number of rock randomly by normal distribution
+    def rockNum(self, name):
+        min_num = self.r.loc[name]['min_num']
+        max_num = self.r.loc[name]['max_num']
+        number = round(random.uniform(min_num, max_num), 0)
+        return number
 
 class Monster:
     """
     the monsters information is here https://stardewvalleywiki.com/Monsters. It may need to use inheritance.
     You can try to create a relatively complicated one first.
     """
-
 
 class Floor:
     """
@@ -149,20 +164,36 @@ class Floor:
     """
     floor_containers = []  # the list of the rocks in this floor
     floor_monsters = []  # the list of the monsters
-
+    total_value = 0  # total value of all the rocks in this floor
     def __init__(self, level):
+        self.r = pd.read_csv('rock.csv')
+        self.r.set_index("item", inplace=True)
         self.level = level
-        self.generate_rock_list(level)
+        self.generate_rock_list()
 
-    @staticmethod
+    def randomItem(self, level):
+        if level <= 39:
+            columnName = '0-39'
+        elif 40 <= level <= 79:
+            columnName = '40-79'
+        elif 80 <= level:
+            columnName = '80+'
+        possibility_list = self.r[columnName].values.tolist()
+        item_list = self.r.index.tolist()
+        output = random.choices(item_list, weights=possibility_list, k=1)
+        return output
+    # @staticmethod
+    # generate the list of rock and the total value in this floor
     def generate_rock_list(self):
         """
         generate all the rocks in this floor.
         """
         rocks_num = random.randint(30, 50)
         for i in range(0, rocks_num):
-            rock = Rock(self.level)
+            rock = self.randomItem(self.level)[0]
             self.floor_containers.append(rock)
+            self.total_value += Rock().rockValue(rock) * Rock().rockNum(rock)
+        return self.floor_containers, self.total_value
 
     def generate_monster_list(self):
         """
@@ -174,10 +205,16 @@ class Floor:
             self.floor_monsters.append(monster)
 
 
+a, b = Floor(44).generate_rock_list()
+print('floor container', a)
+print('total value in this floor', b)
+
 class MainGame:
     """
     running the game
     """
     def __init__(self, level_start, level_end):
+        pass
 
     def one_floor(self):
+        pass
