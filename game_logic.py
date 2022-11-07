@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import pandas as pd
 import numpy as np
+import random
 
 @dataclass
 class Equipment:
@@ -141,8 +142,42 @@ class Monster:
     """
 
 
-# class Floor:
-#
-#
-# def running_game():
-#     return 0
+class Floor:
+    """
+    every floor has [30,50] rocks and [5,10] monsters. So the initiation will create
+    a list of rocks and  a list of monsters based on this level.
+    """
+    floor_containers = []  # the list of the rocks in this floor
+    floor_monsters = []  # the list of the monsters
+
+    def __init__(self, level):
+        self.level = level
+        self.generate_rock_list(level)
+
+    @staticmethod
+    def generate_rock_list(self):
+        """
+        generate all the rocks in this floor.
+        """
+        rocks_num = random.randint(30, 50)
+        for i in range(0, rocks_num):
+            rock = Rock(self.level)
+            self.floor_containers.append(rock)
+
+    def generate_monster_list(self):
+        """
+        generate all the monsters in this floor.
+        """
+        monsters_num = random.randint(5, 10)
+        for i in range(0, monsters_num):
+            monster = Monster(self.level)
+            self.floor_monsters.append(monster)
+
+
+class MainGame:
+    """
+    running the game
+    """
+    def __init__(self, level_start, level_end):
+
+    def one_floor(self):
