@@ -1,0 +1,10 @@
+monster, prob, min_level, max_level
+GreenSlime, 0.5, 1, 120
+Bug, 0., 1, 39
+RockCrab, 0. , 1, 29
+Bat, 0., 31, 39
+FrostBat, 0. , 41, 79
+FrostJelly, 0. , 41, 79
+LavaBat, 0. , 81, 119
+LavaCrab, 0. , 81, 119
+RedSludge, 0. , 81, 119

@@ -331,11 +331,12 @@ class Floor:
 
     def generate_monster_list(self):
         """
-        generate all the monsters in this floor.
+        Generate all the monsters in this floor. Relative probs for monsters are defined
+        elsewhere (e.g. monster_prob.csv) and be passed in.
         """
         monsters_num = random.randint(5, 10)
         for i in range(0, monsters_num):
-            monster = Monster(self.level)  # TODO: monster generation algo modification
+            monster = Monster(self.level)  # TODO: monster generation algo modification. Remember to call if_bottom()
             self.floor_monsters.append(monster)
 
 
