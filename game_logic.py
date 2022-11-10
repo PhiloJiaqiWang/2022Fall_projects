@@ -164,12 +164,11 @@ class Monster(object):
     """
     killable, HP, damage, defense, speed, XP, drop_rate = True, 0, 0, 0, 0, 0, {}
 
-    def __init__(self, level, place=(0, 0)):
+    def __init__(self, level):
         """
         Create a monster with its name.
         """
         self.level = level
-        self.place = place
         self.if_bottom()
 
     def if_bottom(self):
@@ -329,14 +328,19 @@ class Floor:
             self.total_value += Rock().rockValue(rock) * Rock().rockNum(rock)
         return self.floor_containers, self.total_value
 
-    def generate_monster_list(self):
+    def generate_monster_list(self, prob_src="monster_prob.csv"):
         """
         Generate all the monsters in this floor. Relative probs for monsters are defined
         elsewhere (e.g. monster_prob.csv) and be passed in.
         """
+        def mine_section_finder(level):
+            """Finds the section of Mine that the current level is in."""
+
         monsters_num = random.randint(5, 10)
+        probs = pd.read_csv(prob_src, sep=";")
         for i in range(0, monsters_num):
-            monster = Monster(self.level)  # TODO: monster generation algo modification. Remember to call if_bottom()
+            level_info = probs[probs["min_level"] <= self.level][probs["max_level"] >= self.level]
+            # monster =   # TODO: monster generation algo modification.
             self.floor_monsters.append(monster)
 
 
