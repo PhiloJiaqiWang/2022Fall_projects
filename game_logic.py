@@ -328,19 +328,29 @@ class Floor:
             self.total_value += Rock().rockValue(rock) * Rock().rockNum(rock)
         return self.floor_containers, self.total_value
 
-    def generate_monster_list(self, prob_src="monster_prob.csv"):
-        """
-        Generate all the monsters in this floor. Relative probs for monsters are defined
-        elsewhere (e.g. monster_prob.csv) and be passed in.
-        """
-        def mine_section_finder(level):
-            """Finds the section of Mine that the current level is in."""
-
+    def generate_monster_list(self):
+        """Generate all the monsters in this floor. Probs for defined monsters could be changed to be passed in."""
+        monsters = {
+            1: [GreenSlime, Bug, RockCrab],
+            2: [GreenSlime, Bat, Bug],
+            3: [GreenSlime, FrostBat, FrostJelly],
+            4: [GreenSlime, LavaBat, LavaCrab, RedSludge]
+        }
         monsters_num = random.randint(5, 10)
-        probs = pd.read_csv(prob_src, sep=";")
+
+        def section_finder(level):
+            """Find the section number for the level."""
+            if level < 30:
+                return 1
+            elif level < 40:
+                return 2
+            elif level < 80:
+                return 3
+            return 4
+
         for i in range(0, monsters_num):
-            level_info = probs[probs["min_level"] <= self.level][probs["max_level"] >= self.level]
-            # monster =   # TODO: monster generation algo modification.
+            section_i = section_finder(self.level)
+            monster = random.choice(monsters[section_i])()  # TODO: logic test unperformed
             self.floor_monsters.append(monster)
 
 
