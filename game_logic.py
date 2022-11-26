@@ -391,6 +391,8 @@ class MainGame:
             print(monster)
             monster.print_monster_info(monster)
 
+    def GameOver(self):
+
     def one_round_attack(self, monster:Monster, player: Player):
         """
         total_damage_player = damage - defense_monster + if_crit*(3 + Crit_Power/50)
@@ -401,8 +403,20 @@ class MainGame:
         :param player:
         :return:
         """
-
-
+        if_crit = random.choice([True, False], weights=(player.player_att[1], (1-player.player_att[1])))
+        total_damage_player = player.damage - monster.defense + if_crit * (3 + player.player_att[2])/50
+        total_damage_monster = monster.damage - player.player_att[3]
+        if total_damage_player < 1:
+            total_damage_player = 1
+        if total_damage_monster < 1:
+            total_damage_monster = 1
+        while True:
+            monster.HP = monster.HP - total_damage_player
+            if monster.HP < 0:
+                return player
+            player.player_health_energy[0] -= total_damage_monster
+            if player.player_health_energy[0] < 0:
+                self.GameOver()
 
 player1 = Player()
 print(player1.player_health_energy)
