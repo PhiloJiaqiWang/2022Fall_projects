@@ -3,7 +3,9 @@ import pandas as pd
 import numpy as np
 import random
 
-
+############
+# Player #
+############
 @dataclass
 class Equipment:
 
@@ -116,17 +118,20 @@ class Player:
         """
         self.player_health_energy = health_energy_lis
 
+    def print_player_info(self):
+        print("******PLAYER******")
+        print("player_skill_level:", self.player_skill_level)
+        print("player_equipments:", self.player_equipments)
+        att_lis = ["damage", "Crit_Chance", "Crit_Power", "Defense", "Immunity", "Luck"]
+        for i in range(0, len(att_lis)):
+            print(att_lis[i], ":", self.player_att[i])
+        print("player_health_energy:", self.player_health_energy)
+        print("******PLAYER******")
 
-player1 = Player()
-print(player1.player_health_energy)
-a = 'Sneakers'
-equ = Equipment(a)
-print(equ.damage_min)
-player1.set_player_equipments([a, '', '', ''])
-player1.set_player_att()
-print(player1.player_att)
 
-
+############
+# Rock #
+############
 class Rock():
     """
     everytime the player crack rocks, it will generate different items, you can find the information here:
@@ -176,6 +181,15 @@ class Monster(object):
         if result:
             self.drop_rate = {"Diamond": 0.0005, "Prismatic Shard": 0.0005}
         return result
+
+    def print_monster_info(self):
+        print("killable:" + str(self.killable))
+        print("HP:" + str(self.HP))
+        print("damage:" + str(self.damage))
+        print("defense:" + str(self.defense))
+        print("speed:" + str(self.speed))
+        print("XP:" + str(self.XP))
+        print("drop_rate:" + str(self.drop_rate))
 
 
 class Slime(Monster):
@@ -350,11 +364,14 @@ class Floor:
 
         for i in range(0, monsters_num):
             section_i = section_finder(self.level)
-            monster = random.choice(monsters[section_i])()  # TODO: logic test unperformed
+            monster = random.choice(monsters[section_i])  # TODO: logic test unperformed
             self.floor_monsters.append(monster)
+        return self.floor_monsters
 
 
 aa, bb = Floor(44).generate_rock_list()
+mon = Floor(33).generate_monster_list()
+print(mon[1].HP)
 print('floor container', aa)
 print('total value in this floor', bb)
 
@@ -367,5 +384,34 @@ class MainGame:
     def __init__(self, level_start, level_end):
         pass
 
-    def one_floor(self):
-        pass
+    def one_floor(self, level, player: Player):
+        container, total_value = Floor(level).generate_rock_list()
+        monsters = Floor(level).generate_monster_list()
+        for monster in monsters:
+            print(monster)
+            monster.print_monster_info(monster)
+
+    def one_round_attack(self, monster:Monster, player: Player):
+        """
+        total_damage_player = damage - defense_monster + if_crit*(3 + Crit_Power/50)
+        total_damage_monster = damage - defense_player
+        todo: immunity and debuff?
+
+        :param monster:
+        :param player:
+        :return:
+        """
+
+
+
+player1 = Player()
+print(player1.player_health_energy)
+a = 'Sneakers'
+equ = Equipment(a)
+print(equ.damage_min)
+player1.set_player_equipments([a, '', '', ''])
+player1.generate_att_from_equip()
+print(player1.player_att)
+one = MainGame(0, 12)
+player1.print_player_info()
+one.one_floor(2, player1)
