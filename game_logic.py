@@ -387,14 +387,18 @@ class MainGame:
     running the game
     """
     total_value = 0
-    survive_between = [0, 0]
+    survive_between = [1, 1]
+    if_gameover = False
 
     def __init__(self, level_start, player: Player):
         self.survive_between = [level_start, level_start]
         self.this_player = player
         while True:
             self.one_floor(level_start)
-            level_start += level_start
+            if self.if_gameover:
+                break
+            level_start = level_start + 1
+            self.survive_between[1] = level_start
 
     def one_floor(self, level):
         """
@@ -410,12 +414,21 @@ class MainGame:
             print(monster)
             monster.print_monster_info()
             self.one_round_attack(monster, self.this_player)
-        self.total_value = total_value
-        print(total_value)
+        print(len(container))
+        for one_container in container:
+            self.this_player.player_health_energy[1] -= random.choice([1, 2])
+            print("energy", self.this_player.player_health_energy[1])
+            if self.this_player.player_health_energy[1] < 0:
+                self.GameOver()
+                break
+        self.total_value += total_value
+        print("total value in level", level, ":", total_value)
         print(self.this_player.print_player_info())
 
 
     def GameOver(self):
+        self.if_gameover = True
+        print("#####GameOver#####")
         print("total_value_gained:", self.total_value)
         print("survived between:", self.survive_between)
 
@@ -441,6 +454,11 @@ class MainGame:
         while True:
             print(monster.HP, player.player_health_energy[0])
             monster.HP = monster.HP - total_damage_player
+            player.player_health_energy[1] -= 1
+            print("energy", self.this_player.player_health_energy[1])
+            if player.player_health_energy[1] < 0:
+                self.GameOver()
+                break
             if monster.HP < 0:
                 self.this_player = player
                 break
@@ -460,9 +478,9 @@ equ = Equipment(b)
 player1.set_player_equipments([a, b, '', ''])
 player1.generate_att_from_equip()
 print(player1.player_att)
-one = MainGame(0, 12, player1)
+one = MainGame(1, player1)
 player1.print_player_info()
-one.one_floor(2)
+one.one_floor(1)
 
 
 
