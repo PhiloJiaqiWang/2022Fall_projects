@@ -1,7 +1,11 @@
+import copy
 from dataclasses import dataclass
 import pandas as pd
 import numpy as np
 import random
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 
 ############
 # Player #
@@ -101,7 +105,7 @@ class Player:
                 this_equip = Equipment(self.player_equipments[i])
                 this_damage_min += this_equip.damage_min
                 this_damage_max += this_equip.damage_max
-                this_base_crit_chance += this_equip.base_crit_chance
+                this_base_crit_chance += float(this_equip.base_crit_chance)
                 this_crit_chance += this_equip.crit_chance
                 this_crit_power += this_equip.crit_power
                 this_defense += this_equip.defense
@@ -133,6 +137,13 @@ class Player:
         print("player_health_energy:", self.player_health_energy)
         print("******PLAYER******")
 
+    def reset(self):
+        """
+        reset the health and energy bar
+
+        :return:
+        """
+        self.player_health_energy = [100, 270]
 
 ############
 # Rock #
@@ -313,14 +324,14 @@ class Floor:
     every floor has [30,50] rocks and [5,10] monsters. So the initiation will create
     a list of rocks and  a list of monsters based on this level.
     """
-    floor_containers = []  # the list of the rocks in this floor
-    floor_monsters = []  # the list of the monsters
-    total_value = 0  # total value of all the rocks in this floor
 
     def __init__(self, level):
         self.r = pd.read_csv('rock.csv')
         self.r.set_index("item", inplace=True)
         self.level = level
+        self.floor_containers = []  # the list of the rocks in this floor
+        self.floor_monsters = []  # the list of the monsters
+        self.total_value = 0  # total value of all the rocks in this floor
 
     def randomItem(self, level):
         if level <= 39:
@@ -341,7 +352,6 @@ class Floor:
         generate all the rocks in this floor.
         """
         rocks_num = random.randint(30, 50)
-        print("num",rocks_num)
         for i in range(0, rocks_num):
             rock = self.randomItem(self.level)[0]
             self.floor_containers.append(rock)
@@ -374,14 +384,6 @@ class Floor:
             self.floor_monsters.append(monster)
         return self.floor_monsters
 
-
-aa, bb = Floor(44).generate_rock_list()
-mon = Floor(33).generate_monster_list()
-print(mon[1].HP)
-print('floor container', aa)
-print('total value in this floor', bb)
-
-
 class MainGame:
     """
     running the game
@@ -394,9 +396,9 @@ class MainGame:
         self.survive_between = [level_start, level_start]
         self.this_player = player
         while True:
-            self.one_floor(level_start)
             if self.if_gameover:
                 break
+            self.one_floor(level_start)
             level_start = level_start + 1
             self.survive_between[1] = level_start
 
@@ -409,22 +411,19 @@ class MainGame:
         """
         container, total_value = Floor(level).generate_rock_list()
         monsters = Floor(level).generate_monster_list()
-        print(monsters)
         for monster in monsters:
-            print(monster)
-            monster.print_monster_info()
             self.one_round_attack(monster, self.this_player)
-        print(len(container))
-        for one_container in container:
-            self.this_player.player_health_energy[1] -= random.choice([1, 2])
-            print("energy", self.this_player.player_health_energy[1])
-            if self.this_player.player_health_energy[1] < 0:
-                self.GameOver()
+            if self.if_gameover:
                 break
-        self.total_value += total_value
-        print("total value in level", level, ":", total_value)
-        print(self.this_player.print_player_info())
-
+        if self.if_gameover is not True:
+            for one_container in container:
+                self.this_player.player_health_energy[1] -= random.choice([1, 2])
+                if self.this_player.player_health_energy[1] < 0:
+                    self.GameOver()
+                    break
+            if self.if_gameover is not True:
+                self.total_value += total_value
+                print("total value in level", level, ":", total_value)
 
     def GameOver(self):
         self.if_gameover = True
@@ -452,10 +451,8 @@ class MainGame:
         if total_damage_monster < 1:
             total_damage_monster = 1
         while True:
-            print(monster.HP, player.player_health_energy[0])
             monster.HP = monster.HP - total_damage_player
             player.player_health_energy[1] -= 1
-            print("energy", self.this_player.player_health_energy[1])
             if player.player_health_energy[1] < 0:
                 self.GameOver()
                 break
@@ -468,19 +465,34 @@ class MainGame:
                 break
 
 
+def simulation(player: Player, start_level: int, running_num: int):
+    """
+    Monte Carlo Simulation, playing the game for many times.
+
+    :param player:
+    :param start_level:
+    :param running_num: the number of simulation
+    :return: will generate a picture of the total_value of every simulation
+    """
+    value_record = []
+    for i in range(0, running_num):
+        print("########" + str(i) +"########")
+        player.reset()
+        this_time = MainGame(start_level, player)
+        value_record.append(this_time.total_value)
+    print(value_record)
+    plt.hist(value_record, bins=40)
+    plt.savefig("scenario1-" + str(running_num))
+
+
 player1 = Player()
-print(player1.player_health_energy)
 a = 'Sneakers'
 equ = Equipment(a)
-print(equ.damage_min)
 b = "Infinity Dagger"
 equ = Equipment(b)
 player1.set_player_equipments([a, b, '', ''])
 player1.generate_att_from_equip()
-print(player1.player_att)
-one = MainGame(1, player1)
-player1.print_player_info()
-one.one_floor(1)
+simulation(player1, 1, 1000)
 
 
 
