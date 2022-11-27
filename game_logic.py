@@ -321,7 +321,6 @@ class Floor:
         self.r = pd.read_csv('rock.csv')
         self.r.set_index("item", inplace=True)
         self.level = level
-        self.generate_rock_list()
 
     def randomItem(self, level):
         if level <= 39:
@@ -342,6 +341,7 @@ class Floor:
         generate all the rocks in this floor.
         """
         rocks_num = random.randint(30, 50)
+        print("num",rocks_num)
         for i in range(0, rocks_num):
             rock = self.randomItem(self.level)[0]
             self.floor_containers.append(rock)
