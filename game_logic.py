@@ -18,9 +18,9 @@ class Equipment:
         if name in ep['name'].values:
             self.damage_min = ep[ep.name == name]['damage_min'].values[0]
             self.damage_max = ep[ep.name == name]['damage_max'].values[0]
-            self.base_crit_chance = ep[ep.name == name]['damage_min'].values[0]
-            self.crit_chance = ep[ep.name == name]['damage_min'].values[0]
-            self.crit_power = ep[ep.name == name]['damage_min'].values[0]
+            self.base_crit_chance = ep[ep.name == name]['base_crit_chance'].values[0]
+            self.crit_chance = ep[ep.name == name]['crit_chance'].values[0]
+            self.crit_power = ep[ep.name == name]['crit_power'].values[0]
             self.defense = ep[ep.name == name]['defense'].values[0]
             self.immunity = ep[ep.name == name]['immunity'].values[0]
             self.luck = ep[ep.name == name]['luck'].values[0]
@@ -42,7 +42,8 @@ class Player:
     """
     player_skill_level = 0  # mining skill level
     player_equipments = []  # the list of equipments [weapon, footwear, ring_one, ring_two]
-    player_att = []  # the list of attributes [damage, Crit_Chance, Crit_Power, Defense, Immunity, Luck]
+    player_att = []  # the list of attributes
+    # [id,name,level,damage_min,damage_max,base_crit_chance,crit_chance,crit_power,defense,immunity,luck]
     player_health_energy = [100, 270]  # [health bar, energy bar]
 
     def __init__(self):
@@ -85,7 +86,7 @@ class Player:
         >>> player1.set_player_equipments(['Infinity Dagger', 'Crabshell Ring', '', ''])
         >>> player1.generate_att_from_equip()
         >>> player1.player_att
-        [50, 70, 50, 50, 50, 8, 0, 0]
+        [50, 70, 0.06, 4, 0, 8, 0, 0]
         """
         this_damage_min = 0
         this_damage_max = 0
@@ -119,10 +120,14 @@ class Player:
         self.player_health_energy = health_energy_lis
 
     def print_player_info(self):
+        """
+
+        :return:
+        """
         print("******PLAYER******")
         print("player_skill_level:", self.player_skill_level)
         print("player_equipments:", self.player_equipments)
-        att_lis = ["damage", "Crit_Chance", "Crit_Power", "Defense", "Immunity", "Luck"]
+        att_lis = ["damage_min", "damage_max", "Base_crit_chance", "Crit_Chance", "Crit_Power", "Defense", "Immunity", "Luck"]
         for i in range(0, len(att_lis)):
             print(att_lis[i], ":", self.player_att[i])
         print("player_health_energy:", self.player_health_energy)
@@ -172,6 +177,7 @@ class Monster(object):
     def __init__(self, level):
         """
         Create a monster with its name.
+        todo: is the level necessary?
         """
         self.level = level
         self.if_bottom()
@@ -344,12 +350,6 @@ class Floor:
 
     def generate_monster_list(self):
         """Generate all the monsters in this floor. Probs for defined monsters could be changed to be passed in."""
-        monsters = {
-            1: [GreenSlime, Bug, RockCrab],
-            2: [GreenSlime, Bat, Bug],
-            3: [GreenSlime, FrostBat, FrostJelly],
-            4: [GreenSlime, LavaBat, LavaCrab, RedSludge]
-        }
         monsters_num = random.randint(5, 10)
 
         def section_finder(level):
@@ -363,6 +363,12 @@ class Floor:
             return 4
 
         for i in range(0, monsters_num):
+            monsters = {
+                1: [GreenSlime(self.level), Bug(self.level), RockCrab(self.level)],
+                2: [GreenSlime(self.level), Bat(self.level), Bug(self.level)],
+                3: [GreenSlime(self.level), FrostBat(self.level), FrostJelly(self.level)],
+                4: [GreenSlime(self.level), LavaBat(self.level), LavaCrab(self.level), RedSludge(self.level)]
+            }
             section_i = section_finder(self.level)
             monster = random.choice(monsters[section_i])  # TODO: logic test unperformed
             self.floor_monsters.append(monster)
@@ -380,20 +386,40 @@ class MainGame:
     """
     running the game
     """
+    total_value = 0
+    survive_between = [0, 0]
 
-    def __init__(self, level_start, level_end):
-        pass
+    def __init__(self, level_start, player: Player):
+        self.survive_between = [level_start, level_start]
+        self.this_player = player
+        while True:
+            self.one_floor(level_start)
+            level_start += level_start
 
-    def one_floor(self, level, player: Player):
+    def one_floor(self, level):
+        """
+        simulate one floor
+
+        :param level:
+        :return:
+        """
         container, total_value = Floor(level).generate_rock_list()
         monsters = Floor(level).generate_monster_list()
+        print(monsters)
         for monster in monsters:
             print(monster)
-            monster.print_monster_info(monster)
+            monster.print_monster_info()
+            self.one_round_attack(monster, self.this_player)
+        self.total_value = total_value
+        print(total_value)
+        print(self.this_player.print_player_info())
+
 
     def GameOver(self):
+        print("total_value_gained:", self.total_value)
+        print("survived between:", self.survive_between)
 
-    def one_round_attack(self, monster:Monster, player: Player):
+    def one_round_attack(self, monster: Monster, player: Player):
         """
         total_damage_player = damage - defense_monster + if_crit*(3 + Crit_Power/50)
         total_damage_monster = damage - defense_player
@@ -403,29 +429,40 @@ class MainGame:
         :param player:
         :return:
         """
-        if_crit = random.choice([True, False], weights=(player.player_att[1], (1-player.player_att[1])))
-        total_damage_player = player.damage - monster.defense + if_crit * (3 + player.player_att[2])/50
+        player_damage = random.randint(int(player.player_att[0]), int(player.player_att[1]+1))
+        crit_chance = player.player_att[2] + 0.02 * player.player_att[3]
+        if_crit = random.choices([1, 0], weights=(crit_chance, (1-crit_chance)))
+        total_damage_player = player_damage - monster.defense + if_crit[0] * (3 + player.player_att[2])/50
         total_damage_monster = monster.damage - player.player_att[3]
         if total_damage_player < 1:
             total_damage_player = 1
         if total_damage_monster < 1:
             total_damage_monster = 1
         while True:
+            print(monster.HP, player.player_health_energy[0])
             monster.HP = monster.HP - total_damage_player
             if monster.HP < 0:
-                return player
+                self.this_player = player
+                break
             player.player_health_energy[0] -= total_damage_monster
             if player.player_health_energy[0] < 0:
                 self.GameOver()
+                break
+
 
 player1 = Player()
 print(player1.player_health_energy)
 a = 'Sneakers'
 equ = Equipment(a)
 print(equ.damage_min)
-player1.set_player_equipments([a, '', '', ''])
+b = "Infinity Dagger"
+equ = Equipment(b)
+player1.set_player_equipments([a, b, '', ''])
 player1.generate_att_from_equip()
 print(player1.player_att)
-one = MainGame(0, 12)
+one = MainGame(0, 12, player1)
 player1.print_player_info()
-one.one_floor(2, player1)
+one.one_floor(2)
+
+
+
