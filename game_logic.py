@@ -74,12 +74,12 @@ class Player:
         """
         self.player_equipments = equipments
 
-    def set_player_att(self):
+    def set_player_att(self, given_lis):
         """
-        to set the attributes of this player. according to the equipments, search for every equipment in the
-        equipment_db and add total attributes
+        to set the attributes of this player manually
 
         """
+        self.player_att = given_lis
 
     def generate_att_from_equip(self):
         """
@@ -476,15 +476,40 @@ def simulation(player: Player, start_level: int, running_num: int):
     """
     value_record = []
     for i in range(0, running_num):
-        print("########" + str(i) +"########")
+        print("########" + str(i) + "########")
         player.reset()
         this_time = MainGame(start_level, player)
         value_record.append(this_time.total_value)
     print(value_record)
     plt.hist(value_record, bins=40)
-    plt.savefig("scenario1-" + str(running_num))
+    plt.savefig("hypothesis1-" + str(start_level) + "-" + str(running_num))
+    print("The average value the player gained in this scenario is:" + str(sum(value_record)/len(value_record)))
+    return sum(value_record)/len(value_record)
+
+############
+# Validating an MC simulation #
+############
+# 1. Statistical convergence ---see the output image
+# 2. Control all other variables, to see if each component and the outcomes have a logical correlation
 
 
+def test_correlation():
+    """
+    Control all other variables, to see if each component and the outcomes have a logical correlation
+
+    :return:
+    """
+    player_tp = Player()
+    player_tp.set_player_att([])
+    player1.generate_att_from_equip()
+    simulation(player1, 1, 1000)
+    simulation(player1, 80, 1000)
+
+
+############
+# hypothesis1 #
+# When equipped with the infinity dagger, it is more rewarding to start from 80th floor than from 0 floor. #
+############
 player1 = Player()
 a = 'Sneakers'
 equ = Equipment(a)
@@ -493,6 +518,9 @@ equ = Equipment(b)
 player1.set_player_equipments([a, b, '', ''])
 player1.generate_att_from_equip()
 simulation(player1, 1, 1000)
+simulation(player1, 80, 1000)
+############
+
 
 
 
