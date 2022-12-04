@@ -6,8 +6,10 @@ import pandas as pd
 import numpy
 import random
 import matplotlib
+
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+
 
 ############
 # Player #
@@ -127,11 +129,11 @@ class Player:
                 this_immunity += this_equip.immunity
                 this_luck += this_equip.luck
             if this_damage_min_bonus != 0:
-                this_damage_min = this_damage_min * (100 + this_damage_min_bonus)/100
+                this_damage_min = this_damage_min * (100 + this_damage_min_bonus) / 100
             if this_damage_max_bonus != 0:
-                this_damage_max = this_damage_max * (100 + this_damage_max_bonus)/100
+                this_damage_max = this_damage_max * (100 + this_damage_max_bonus) / 100
             if this_crit_power_bonus != 0:
-                this_crit_power = this_crit_power * (100 + this_crit_power_bonus)/100
+                this_crit_power = this_crit_power * (100 + this_crit_power_bonus) / 100
             self.player_att = [this_damage_min, this_damage_max, this_base_crit_chance, this_crit_chance,
                                this_crit_power, this_defense, this_immunity, this_luck]
 
@@ -152,7 +154,8 @@ class Player:
         print("******PLAYER******")
         print("player_skill_level:", self.player_skill_level)
         print("player_equipments:", self.player_equipments)
-        att_lis = ["damage_min", "damage_max", "Base_crit_chance", "Crit_Chance", "Crit_Power", "Defense", "Immunity", "Luck"]
+        att_lis = ["damage_min", "damage_max", "Base_crit_chance", "Crit_Chance", "Crit_Power", "Defense", "Immunity",
+                   "Luck"]
         for i in range(0, len(att_lis)):
             print(att_lis[i], ":", self.player_att[i])
         print("player_health_energy:", self.player_health_energy)
@@ -166,10 +169,11 @@ class Player:
         """
         self.player_health_energy = [100, 270]
 
+
 ############
 # Rock #
 ############
-class Rock():
+class Rock:
     """
     everytime the player crack rocks, it will generate different items, you can find the information here:
     https://stardewvalleywiki.com/The_Mines#Remixed_Rewards
@@ -201,16 +205,17 @@ class Rock():
 ############
 class Monster(object):
     """
-    the monsters information is here https://stardewvalleywiki.com/Monsters. It may need to use inheritance.
-    You can try to create a relatively complicated one first.
+    The monsters information is here https://stardewvalleywiki.com/Monsters.
     """
     killable, HP, damage, defense, speed, XP, drop_rate = True, 0, 0, 0, 0, 0, {}
-    drop_value = {}
+    drop_value = {"Diamond": 750, "Prismatic Shard": 2000, "Amethyst": 100, "Dwarf Scroll I": 1, "Dwarf Scroll II": 1,
+                  "Dwarf Scroll III": 1, "Dwarf Scroll IV": 1, "Green Algae": 15, "Sap": 2, "Slime": 5, "Jade": 200,
+                  "Coal": 15, "Ancient Seed": 5, "Bug Meat": 8, "White Algae": 25, "Bat Wings": 15, "Bomb": 50,
+                  "Rare Disc": 300, "Cherry Bomb": 50, "Crab": 100, "Winter Root": 70}
 
     def __init__(self, level):
         """
         Create a monster with its name.
-        todo: is the level necessary?
         """
         self.level = level
         self.if_bottom()
@@ -223,15 +228,17 @@ class Monster(object):
 
     def generate_value(self):
         drop_lis = []
-        dr = self.drop_rate
-        for k, v in dr.items():
-            a = random.choices([k, "nothing"], weights=[v, (1-v)])
+        total_val = 0
+
+        for k, v in self.drop_rate.items():
+            a = random.choices([k, "nothing"], weights=[v, (1 - v)])
             if a[0] != "nothing":
                 drop_lis.append(a[0])
-        # for i in drop_lis:
-        #
-        # print(drop_lis)
-        return 1
+
+        for i in drop_lis:
+            total_val += self.drop_value[i]
+        print(drop_lis)
+        return total_val
 
     def print_monster_info(self):
         print("killable:" + str(self.killable))
@@ -257,7 +264,7 @@ class GreenSlime(Slime):
 
     def drop(self):
         self.drop_rate.update({"Amethyst": 0.015, "Dwarf Scroll I": 0.005, "Dwarf Scroll II": 0.001, "Green Algae": 0.1,
-                               "Sap": 0.15, "Slime": 0.8})  # TODO: sum != 1; Slime Hutch?
+                               "Sap": 0.15, "Slime": 0.8})  # TODO: Slime Hutch?
 
 
 class FrostJelly(Slime):
@@ -268,7 +275,7 @@ class FrostJelly(Slime):
     def drop(self):
         self.drop_rate.update({"Dwarf Scroll II": 0.005, "Dwarf Scroll III": 0.015, "Dwarf Scroll IV": 0.001,
                                "Jade": 0.02, "Sap": 0.5, "Slime": 0.75, "Winter Root": 0.08})
-        # TODO: sum != 1; Slime Hutch?
+        # TODO: Slime Hutch?
 
 
 class RedSludge(Slime):
@@ -277,7 +284,7 @@ class RedSludge(Slime):
 
     def drop(self):
         self.drop_rate.update({"Coal": 0.01, "Dwarf Scroll III": 0.005, "Dwarf Scroll II": 0.001, "Green Algae": 0.1,
-                               "Sap": 0.5, "Slime": 0.8, "White Algae": 0.1})  # TODO: sum != 1; Slime Hutch? 1-3 Coal
+                               "Sap": 0.5, "Slime": 0.8, "White Algae": 0.1})  # TODO: Slime Hutch?
         self.drop_rate["Diamond"] = 0.01
 
 
@@ -291,7 +298,6 @@ class Bug(Monster):
     def drop(self):
         self.drop_rate.update({"Ancient Seed": 0.005, "Bug Meat": 0.76, "Dwarf Scroll I": 0.005,
                                "Dwarf Scroll IV": 0.001, "White Algae": 0.02})
-        # TODO: sum != 1
 
 
 class Bat(Monster):
@@ -304,7 +310,6 @@ class Bat(Monster):
     def drop(self):
         self.drop_rate.update({"Bat Wings": 0.94, "Bomb": 0.02, "Dwarf Scroll I": 0.005,
                                "Dwarf Scroll IV": 0.001, "Rare Disc": 0.01})
-        # TODO: sum != 1, 1-2 Bat Wings
 
 
 class FrostBat(Bat):
@@ -314,7 +319,6 @@ class FrostBat(Bat):
     def drop(self):
         self.drop_rate.update({"Bat Wings": 0.95, "Bomb": 0.02, "Dwarf Scroll II": 0.005,
                                "Dwarf Scroll IV": 0.001, "Rare Disc": 0.01})
-        # TODO: sum != 1, 1-2 Bat Wings
 
 
 class LavaBat(Bat):
@@ -324,7 +328,6 @@ class LavaBat(Bat):
     def drop(self):
         self.drop_rate.update({"Bat Wings": 0.97, "Bomb": 0.02, "Dwarf Scroll III": 0.005,
                                "Dwarf Scroll IV": 0.001, "Rare Disc": 0.01})
-        # TODO: sum != 1, 1-2 Bat Wings
 
 
 class Crab(Monster):
@@ -341,7 +344,6 @@ class RockCrab(Crab):
 
     def drop(self):
         self.drop_rate.update({"Cherry Bomb": 0.4, "Crab": 0.15, "Dwarf Scroll I": 0.005, "Dwarf Scroll IV": 0.001})
-        # TODO: sum != 1
 
 
 rc = RockCrab(2)
@@ -349,13 +351,13 @@ rc.drop()
 rc.generate_value()
 print("tt", rc.drop_rate)
 
+
 class LavaCrab(Crab):
     """A LavaCrab is a variation of Crab and could only be found on level 80-119 in the Mines."""
     HP, damage, defense, speed, XP = 120, 15, 3, 3, 12
 
     def drop(self):
         self.drop_rate.update({"Bomb": 0.4, "Crab": 0.25, "Dwarf Scroll III": 0.005, "Dwarf Scroll IV": 0.001})
-        # TODO: sum != 1
 
 
 class Floor:
@@ -391,7 +393,7 @@ class Floor:
         generate all the rocks in this floor.
         """
         rocks_num = random.randint(30, 50)
-        for i in range(0, int((rocks_num/denominator)*numerator)):
+        for i in range(0, int((rocks_num / denominator) * numerator)):
             rock = self.randomItem(self.level)[0]
             self.floor_containers.append(rock)
             self.total_value += Rock().rockValue(rock) * Rock().rockNum(rock)
@@ -455,7 +457,7 @@ class MainGame:
             self.one_round_attack(monster, self.this_player)
             monster.drop()
             self.total_value += monster.generate_value()
-            count = count+1
+            count = count + 1
             if self.if_gameover:
                 break
         container, total_value = Floor(level).generate_rock_list(len(monsters), count)
@@ -485,10 +487,10 @@ class MainGame:
         :param player:
         :return:
         """
-        player_damage = random.randint(int(player.player_att[0]), int(player.player_att[1]+1))
+        player_damage = random.randint(int(player.player_att[0]), int(player.player_att[1] + 1))
         crit_chance = player.player_att[2] + 0.02 * player.player_att[3]
-        if_crit = random.choices([1, 0], weights=(crit_chance, (1-crit_chance)))
-        total_damage_player = player_damage - monster.defense + if_crit[0] * (3 + player.player_att[2])/50
+        if_crit = random.choices([1, 0], weights=(crit_chance, (1 - crit_chance)))
+        total_damage_player = player_damage - monster.defense + if_crit[0] * (3 + player.player_att[2]) / 50
         total_damage_monster = monster.damage - player.player_att[3]
         if total_damage_player < 1:
             total_damage_player = 1
@@ -530,8 +532,9 @@ def simulation(player: Player, start_level: int, running_num: int, scenario: str
     if if_drawn:
         plt.hist(value_record, bins=40)
         plt.savefig(scenario + "-" + "-" + str(running_num))
-    print("The average value the player gained in this scenario is:" + str(sum(value_record)/len(value_record)))
-    return sum(value_record)/len(value_record)
+    print("The average value the player gained in this scenario is:" + str(sum(value_record) / len(value_record)))
+    return sum(value_record) / len(value_record)
+
 
 ############
 # Validating an MC simulation #
@@ -551,7 +554,7 @@ def test_correlation_damage():
     result_lis = []
     for i in range(10, 100, 10):
         min_damage = i
-        max_damage = i+10
+        max_damage = i + 10
         player_tp.set_player_att([min_damage, max_damage, 0, 0, 0, 0, 0, 0])
         result_lis.append(simulation(player_tp, 1, 100, "correlation_with_damage", False))
         x_axis.append(i)
@@ -585,10 +588,11 @@ def test_correlation_others(attr: str):
     print(x_axis)
     print(result_lis)
     plt.plot(x_axis, result_lis, linestyle='dotted')
-    plt.savefig(attr+"AndValue")
+    plt.savefig(attr + "AndValue")
     corr = np.corrcoef(x_axis, result_lis)
     print(corr)
     return corr
+
 
 ############
 # hypothesis1 #
@@ -623,8 +627,4 @@ player_jade.generate_att_from_equip()
 simulation(player_jade, 1, 1000, "hypothesis3-JadeRing", True)
 ############
 
-#test_correlation_others("defense")
-
-
-
-
+# test_correlation_others("defense")
