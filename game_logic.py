@@ -488,7 +488,7 @@ class MainGame:
         player_damage = random.randint(int(player.player_att[0]), int(player.player_att[1]+1))
         crit_chance = player.player_att[2] + 0.02 * player.player_att[3]
         if_crit = random.choices([1, 0], weights=(crit_chance, (1-crit_chance)))
-        total_damage_player = player_damage - monster.defense + if_crit[0] * (3 + player.player_att[2])/50
+        total_damage_player = player_damage - monster.defense + if_crit[0] * (3 + player.player_att[4])/50
         total_damage_monster = monster.damage - player.player_att[3]
         if total_damage_player < 1:
             total_damage_player = 1
@@ -549,7 +549,7 @@ def test_correlation_damage():
     player_tp = Player()
     x_axis = []
     result_lis = []
-    for i in range(10, 100, 10):
+    for i in range(10, 100, 5):
         min_damage = i
         max_damage = i+10
         player_tp.set_player_att([min_damage, max_damage, 0, 0, 0, 0, 0, 0])
@@ -573,9 +573,9 @@ def test_correlation_others(attr: str):
     player_tp = Player()
     x_axis = []
     result_lis = []
-    for i in range(1, 10):
-        if attr == "defense":
-            player_tp.set_player_att([30, 40, 0, 0, 0, i, 0, 0])
+    for i in range(1, 50):
+        if attr == "crit_power":
+            player_tp.set_player_att([30, 40, 0, 0.5, i, 0, 0, 0])
         elif attr == "luck":
             player_tp.set_player_att([30, 40, 0, 0, 0, 0, 0, i])
         else:
@@ -609,21 +609,21 @@ def test_correlation_others(attr: str):
 # hypothesis3 #
 # The ruby ring is more useful than the jade ring when equipped with Burglar's Shank. #
 ############
-player_ruby = Player()
-a3 = 'Sneakers'
-b3 = "Burglar's Shank"
-c3 = "Ruby Ring"
-player_ruby.set_player_equipments([a3, b3, c3, ''])
-player_ruby.generate_att_from_equip()
-simulation(player_ruby, 1, 1000, "hypothesis3-RubyRing", True)
-player_jade = Player()
-d3 = "Jade Ring"
-player_jade.set_player_equipments([a3, b3, d3, ''])
-player_jade.generate_att_from_equip()
-simulation(player_jade, 1, 1000, "hypothesis3-JadeRing", True)
+# player_ruby = Player()
+# a3 = 'Sneakers'
+# b3 = "Burglar's Shank"
+# c3 = "Ruby Ring"
+# player_ruby.set_player_equipments([a3, b3, c3, ''])
+# player_ruby.generate_att_from_equip()
+# simulation(player_ruby, 1, 1000, "hypothesis3-RubyRing", True)
+# player_jade = Player()
+# d3 = "Jade Ring"
+# player_jade.set_player_equipments([a3, b3, d3, ''])
+# player_jade.generate_att_from_equip()
+# simulation(player_jade, 1, 1000, "hypothesis3-JadeRing", True)
 ############
 
-#test_correlation_others("defense")
+test_correlation_others("crit_power")
 
 
 
