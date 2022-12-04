@@ -1,7 +1,9 @@
 import copy
 from dataclasses import dataclass
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+import numpy
 import random
 import matplotlib
 matplotlib.use('TkAgg')
@@ -184,6 +186,7 @@ class Monster(object):
     You can try to create a relatively complicated one first.
     """
     killable, HP, damage, defense, speed, XP, drop_rate = True, 0, 0, 0, 0, 0, {}
+    drop_value = {}
 
     def __init__(self, level):
         """
@@ -196,8 +199,19 @@ class Monster(object):
     def if_bottom(self):
         result = self.level == 120
         if result:
-            self.drop_rate = {"Diamond": 0.0005, "Prismatic Shard": 0.0005}
+            self.drop_rate = {"Diamond": 0.0005, "Prismatic Shard": 0.0005, "nothing": 0.999}
         return result
+
+    def generate_value(self):
+        drop_lis = []
+        dr = self.drop_rate
+        for k, v in dr.items():
+            a = random.choices([k, "nothing"], weights=[v, (1-v)])
+            if a[0] != "nothing":
+                drop_lis.append(a[0])
+        for i in drop_lis:
+
+        print(drop_lis)
 
     def print_monster_info(self):
         print("killable:" + str(self.killable))
@@ -310,6 +324,11 @@ class RockCrab(Crab):
         # TODO: sum != 1
 
 
+rc = RockCrab(2)
+rc.drop()
+rc.generate_value()
+print("tt", rc.drop_rate)
+
 class LavaCrab(Crab):
     """A LavaCrab is a variation of Crab and could only be found on level 80-119 in the Mines."""
     HP, damage, defense, speed, XP = 120, 15, 3, 3, 12
@@ -347,12 +366,12 @@ class Floor:
 
     # @staticmethod
     # generate the list of rock and the total value in this floor
-    def generate_rock_list(self):
+    def generate_rock_list(self, denominator: int, numerator: int):
         """
         generate all the rocks in this floor.
         """
         rocks_num = random.randint(30, 50)
-        for i in range(0, rocks_num):
+        for i in range(0, int((rocks_num/denominator)*numerator)):
             rock = self.randomItem(self.level)[0]
             self.floor_containers.append(rock)
             self.total_value += Rock().rockValue(rock) * Rock().rockNum(rock)
@@ -384,6 +403,7 @@ class Floor:
             self.floor_monsters.append(monster)
         return self.floor_monsters
 
+
 class MainGame:
     """
     running the game
@@ -409,12 +429,16 @@ class MainGame:
         :param level:
         :return:
         """
-        container, total_value = Floor(level).generate_rock_list()
         monsters = Floor(level).generate_monster_list()
+        count = 0  # how many monsters have been killed
         for monster in monsters:
             self.one_round_attack(monster, self.this_player)
+            monster.drop()
+            self.total_value += monster.generate_value()
+            count = count+1
             if self.if_gameover:
                 break
+        container, total_value = Floor(level).generate_rock_list(len(monsters), count)
         if self.if_gameover is not True:
             for one_container in container:
                 self.this_player.player_health_energy[1] -= random.choice([1, 2])
@@ -465,14 +489,16 @@ class MainGame:
                 break
 
 
-def simulation(player: Player, start_level: int, running_num: int):
+def simulation(player: Player, start_level: int, running_num: int, scenario: str, if_drawn: bool):
     """
     Monte Carlo Simulation, playing the game for many times.
 
     :param player:
     :param start_level:
     :param running_num: the number of simulation
-    :return: will generate a picture of the total_value of every simulation
+    :param scenario: the number of simulation
+    :param if_drawn: if generate the chart
+    :return: the average of every simulation
     """
     value_record = []
     for i in range(0, running_num):
@@ -481,8 +507,9 @@ def simulation(player: Player, start_level: int, running_num: int):
         this_time = MainGame(start_level, player)
         value_record.append(this_time.total_value)
     print(value_record)
-    plt.hist(value_record, bins=40)
-    plt.savefig("hypothesis1-" + str(start_level) + "-" + str(running_num))
+    if if_drawn:
+        plt.hist(value_record, bins=40)
+        plt.savefig(scenario + "-" + "-" + str(running_num))
     print("The average value the player gained in this scenario is:" + str(sum(value_record)/len(value_record)))
     return sum(value_record)/len(value_record)
 
@@ -493,33 +520,72 @@ def simulation(player: Player, start_level: int, running_num: int):
 # 2. Control all other variables, to see if each component and the outcomes have a logical correlation
 
 
-def test_correlation():
+def test_correlation_damage():
     """
     Control all other variables, to see if each component and the outcomes have a logical correlation
 
     :return:
     """
     player_tp = Player()
-    player_tp.set_player_att([])
-    player1.generate_att_from_equip()
-    simulation(player1, 1, 1000)
-    simulation(player1, 80, 1000)
+    x_axis = []
+    result_lis = []
+    for i in range(10, 100, 10):
+        min_damage = i
+        max_damage = i+10
+        player_tp.set_player_att([min_damage, max_damage, 0, 0, 0, 0, 0, 0])
+        result_lis.append(simulation(player_tp, 1, 100, "correlation_with_damage", False))
+        x_axis.append(i)
+    print(x_axis)
+    print(result_lis)
+    plt.plot(x_axis, result_lis, linestyle='dotted')
+    plt.savefig("DamagaAndValue")
+    corr = np.corrcoef(x_axis, result_lis)
+    print(corr)
+    return corr
 
+
+def test_correlation_others(attr: str):
+    """
+    Control all other variables, to see if each component and the outcomes have a logical correlation
+
+    :return:
+    """
+    player_tp = Player()
+    x_axis = []
+    result_lis = []
+    for i in range(1, 10):
+        if attr == "defense":
+            player_tp.set_player_att([30, 40, 0, 0, 0, i, 0, 0])
+        elif attr == "luck":
+            player_tp.set_player_att([30, 40, 0, 0, 0, 0, 0, i])
+        else:
+            return None
+        result_lis.append(simulation(player_tp, 1, 100, "correlation_with_damage", False))
+        x_axis.append(i)
+    print(x_axis)
+    print(result_lis)
+    plt.plot(x_axis, result_lis, linestyle='dotted')
+    plt.savefig(attr+"AndValue")
+    corr = np.corrcoef(x_axis, result_lis)
+    print(corr)
+    return corr
 
 ############
 # hypothesis1 #
 # When equipped with the infinity dagger, it is more rewarding to start from 80th floor than from 0 floor. #
 ############
-player1 = Player()
-a = 'Sneakers'
-equ = Equipment(a)
-b = "Infinity Dagger"
-equ = Equipment(b)
-player1.set_player_equipments([a, b, '', ''])
-player1.generate_att_from_equip()
-simulation(player1, 1, 1000)
-simulation(player1, 80, 1000)
+# player1 = Player()
+# a = 'Sneakers'
+# equ = Equipment(a)
+# b = "Infinity Dagger"
+# equ = Equipment(b)
+# player1.set_player_equipments([a, b, '', ''])
+# player1.generate_att_from_equip()
+# simulation(player1, 1, 1000, "hypothesis1-1", True)
+# simulation(player1, 80, 1000, "hypothesis1-80", True)
 ############
+
+#test_correlation_others("defense")
 
 
 
