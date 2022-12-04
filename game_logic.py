@@ -95,24 +95,43 @@ class Player:
         [50, 70, 0.06, 4, 0, 8, 0, 0]
         """
         this_damage_min = 0
+        this_damage_min_bonus = 0
         this_damage_max = 0
+        this_damage_max_bonus = 0
         this_base_crit_chance = 0
         this_crit_chance = 0
         this_crit_power = 0
+        this_crit_power_bonus = 0
         this_defense = 0
         this_immunity = 0
         this_luck = 0
         if self.player_equipments:
             for i in range(0, len(self.player_equipments)):
                 this_equip = Equipment(self.player_equipments[i])
-                this_damage_min += this_equip.damage_min
-                this_damage_max += this_equip.damage_max
+                if "%" in str(this_equip.damage_min):
+                    this_damage_min_bonus += int(this_equip.damage_min[0:2])
+                else:
+                    this_damage_min += int(this_equip.damage_min)
+                print(this_damage_min_bonus)
+                if "%" in str(this_equip.damage_max):
+                    this_damage_max_bonus += int(this_equip.damage_max[0:2])
+                else:
+                    this_damage_max += int(this_equip.damage_max)
                 this_base_crit_chance += float(this_equip.base_crit_chance)
                 this_crit_chance += this_equip.crit_chance
-                this_crit_power += this_equip.crit_power
+                if "%" in str(this_equip.crit_power):
+                    this_crit_power_bonus += int(this_equip.crit_power[0:2])
+                else:
+                    this_crit_power += float(this_equip.crit_power)
                 this_defense += this_equip.defense
                 this_immunity += this_equip.immunity
                 this_luck += this_equip.luck
+            if this_damage_min_bonus != 0:
+                this_damage_min = this_damage_min * (100 + this_damage_min_bonus)/100
+            if this_damage_max_bonus != 0:
+                this_damage_max = this_damage_max * (100 + this_damage_max_bonus)/100
+            if this_crit_power_bonus != 0:
+                this_crit_power = this_crit_power * (100 + this_crit_power_bonus)/100
             self.player_att = [this_damage_min, this_damage_max, this_base_crit_chance, this_crit_chance,
                                this_crit_power, this_defense, this_immunity, this_luck]
 
@@ -209,9 +228,10 @@ class Monster(object):
             a = random.choices([k, "nothing"], weights=[v, (1-v)])
             if a[0] != "nothing":
                 drop_lis.append(a[0])
-        for i in drop_lis:
-
-        print(drop_lis)
+        # for i in drop_lis:
+        #
+        # print(drop_lis)
+        return 1
 
     def print_monster_info(self):
         print("killable:" + str(self.killable))
@@ -583,6 +603,24 @@ def test_correlation_others(attr: str):
 # player1.generate_att_from_equip()
 # simulation(player1, 1, 1000, "hypothesis1-1", True)
 # simulation(player1, 80, 1000, "hypothesis1-80", True)
+############
+
+############
+# hypothesis3 #
+# The ruby ring is more useful than the jade ring when equipped with Burglar's Shank. #
+############
+player_ruby = Player()
+a3 = 'Sneakers'
+b3 = "Burglar's Shank"
+c3 = "Ruby Ring"
+player_ruby.set_player_equipments([a3, b3, c3, ''])
+player_ruby.generate_att_from_equip()
+simulation(player_ruby, 1, 1000, "hypothesis3-RubyRing", True)
+player_jade = Player()
+d3 = "Jade Ring"
+player_jade.set_player_equipments([a3, b3, d3, ''])
+player_jade.generate_att_from_equip()
+simulation(player_jade, 1, 1000, "hypothesis3-JadeRing", True)
 ############
 
 #test_correlation_others("defense")
