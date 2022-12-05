@@ -9,7 +9,7 @@ import matplotlib
 
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-
+from matplotlib.patches import Rectangle
 
 ############
 # Player #
@@ -53,12 +53,22 @@ class Player:
     player_att = []  # the list of attributes
     # [id,name,level,damage_min,damage_max,base_crit_chance,crit_chance,crit_power,defense,immunity,luck]
     player_health_energy = [100, 270]  # [health bar, energy bar]
-
+    player_profession = []
     def __init__(self):
         """
         Initiate function for the players.
         """
 
+    def set_profession(self, profession):
+        """
+        At 5 level Mininh skills, we can Choose Miner(+1 ore per vein) or Geologist(Chance for gems to appear in pairs)
+        >>> player1 = Player()
+        >>> player1.set_profession(['Miner'])
+        >>> player1.player_pro
+        ['Miner']
+        """
+        self.player_profession = profession
+        self.player_pro = self.player_profession
     def set_skill_level(self, skill_level: int):
         """
         to set the mining skill level. 10 levels in total, but only 5 level and 10 level will make a difference.
@@ -375,6 +385,11 @@ class Floor:
         self.total_value = 0  # total value of all the rocks in this floor
 
     def randomItem(self, level):
+        """
+        >>> cur_floor = Floor(5)
+        >>> cur_floor.randomItem(5)
+        ['nothing']
+        """
         if level <= 39:
             columnName = '0-39'
         elif 40 <= level <= 79:
@@ -388,15 +403,20 @@ class Floor:
 
     # @staticmethod
     # generate the list of rock and the total value in this floor
-    def generate_rock_list(self, denominator: int, numerator: int):
+    def generate_rock_list(self, denominator: int, numerator: int, player_pro):
         """
         generate all the rocks in this floor.
         """
         rocks_num = random.randint(30, 50)
+        if player_pro == 'Miner':
+            rocks_num += 1
         for i in range(0, int((rocks_num / denominator) * numerator)):
             rock = self.randomItem(self.level)[0]
             self.floor_containers.append(rock)
-            self.total_value += Rock().rockValue(rock) * Rock().rockNum(rock)
+            if player_pro == 'Geologist' and rock in ['Emerald', 'Aquamarine', 'Ruby', 'Amethyst', 'Topaz', 'Jade', 'Diamond']:
+                self.total_value += Rock().rockValue(rock) * (Rock().rockNum(rock) + 1)
+            else:
+                self.total_value += Rock().rockValue(rock) * Rock().rockNum(rock)
         return self.floor_containers, self.total_value
 
     def generate_monster_list(self):
@@ -434,9 +454,10 @@ class MainGame:
     survive_between = [1, 1]
     if_gameover = False
 
-    def __init__(self, level_start, player: Player):
+    def __init__(self, level_start, player: Player, profession):
         self.survive_between = [level_start, level_start]
         self.this_player = player
+        self.profession = profession
         while True:
             if self.if_gameover:
                 break
@@ -460,7 +481,7 @@ class MainGame:
             count = count + 1
             if self.if_gameover:
                 break
-        container, total_value = Floor(level).generate_rock_list(len(monsters), count)
+        container, total_value = Floor(level).generate_rock_list(len(monsters), count, self.profession)
         if self.if_gameover is not True:
             for one_container in container:
                 self.this_player.player_health_energy[1] -= random.choice([1, 2])
@@ -511,7 +532,7 @@ class MainGame:
                 break
 
 
-def simulation(player: Player, start_level: int, running_num: int, scenario: str, if_drawn: bool):
+def simulation(player: Player, start_level: int, running_num: int, scenario: str, if_drawn: bool, profession):
     """
     Monte Carlo Simulation, playing the game for many times.
 
@@ -526,7 +547,7 @@ def simulation(player: Player, start_level: int, running_num: int, scenario: str
     for i in range(0, running_num):
         print("########" + str(i) + "########")
         player.reset()
-        this_time = MainGame(start_level, player)
+        this_time = MainGame(start_level, player, profession)
         value_record.append(this_time.total_value)
     print(value_record)
     if if_drawn:
@@ -567,7 +588,7 @@ def test_correlation_damage():
     return corr
 
 
-def test_correlation_others(attr: str):
+def test_correlation_others(attr: str, profession):
     """
     Control all other variables, to see if each component and the outcomes have a logical correlation
 
@@ -583,7 +604,7 @@ def test_correlation_others(attr: str):
             player_tp.set_player_att([30, 40, 0, 0, 0, 0, 0, i])
         else:
             return None
-        result_lis.append(simulation(player_tp, 1, 100, "correlation_with_damage", False))
+        result_lis.append(simulation(player_tp, 1, 100, "correlation_with_damage", False, profession))
         x_axis.append(i)
     print(x_axis)
     print(result_lis)
@@ -605,26 +626,80 @@ def test_correlation_others(attr: str):
 # equ = Equipment(b)
 # player1.set_player_equipments([a, b, '', ''])
 # player1.generate_att_from_equip()
-# simulation(player1, 1, 1000, "hypothesis1-1", True)
-# simulation(player1, 80, 1000, "hypothesis1-80", True)
+# simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
+# simulation(player1, 80, 1000, "hypothesis1-80", True,profession=None)
 ############
+
+############
+# hypothesis 2 #
+# When reaching level 5 of mining skill, it is more rewarding to choose miner than geologist. #
+# We set the player equipments Sneakers and Infinity Dagger #
+# run the simulation 500 times each for miner and geologist #
+# compare the total gold gained from miner and geologist #
+# according to diagram and the mean gold value, the geologist can gain more gold than miner.
+############
+
+def simulation_hypo2(player: Player, start_level: int, running_num: int, scenario: str, if_drawn: bool, profession):
+    """
+    Monte Carlo Simulation, playing the game for many times.
+
+    :param player:
+    :param start_level:
+    :param running_num: the number of simulation
+    :param scenario: the number of simulation
+    :param if_drawn: if generate the chart
+    :return: the average of every simulation
+    """
+    value_record = []
+    for i in range(0, running_num):
+        # print("########" + str(i) + "########")
+        player.reset()
+        this_time = MainGame(start_level, player, profession)
+        value_record.append(this_time.total_value)
+    # print(value_record)
+    if if_drawn:
+        plt.hist(value_record, bins=40, label = profession)
+        plt.savefig(scenario + "-" + "-" + str(running_num))
+        plt.xlabel("Number of Simulation", fontsize=12)
+        plt.ylabel("Total Value", fontsize=12)
+        handles = [Rectangle((0, 0), 1, 1, color=c) for c in ["Blue", "Orange"]]
+        labels = ["Miner", "Geologist"]
+        plt.legend(handles, labels)
+
+
+    print("The average value the player gained in this scenario is:" + str(sum(value_record)/len(value_record)))
+    return sum(value_record)/len(value_record)
+
+a = 'Miner'
+b = 'Geologist'
+Miner_player = Player()
+Geologist_player = Player()
+Miner_player.set_profession([a])
+Geologist_player.set_profession([b])
+Miner_player.set_player_equipments(['Sneakers', "Infinity Dagger", '', ''])
+Miner_player.generate_att_from_equip()
+Geologist_player.set_player_equipments(['', '', '', ''])
+Geologist_player.generate_att_from_equip()
+simulation_hypo2(Miner_player, 1, 500, "hypothesis2-Miner", True, a)
+simulation_hypo2(Miner_player, 1, 500, "hypothesis2-Geologist", True, b)
 
 ############
 # hypothesis3 #
 # The ruby ring is more useful than the jade ring when equipped with Burglar's Shank. #
 ############
+
 # player_ruby = Player()
 # a3 = 'Sneakers'
 # b3 = "Burglar's Shank"
 # c3 = "Ruby Ring"
 # player_ruby.set_player_equipments([a3, b3, c3, ''])
 # player_ruby.generate_att_from_equip()
-# simulation(player_ruby, 1, 1000, "hypothesis3-RubyRing", True)
+# simulation(player_ruby, 1, 10, "hypothesis3-RubyRing", True, profession=None)
 # player_jade = Player()
 # d3 = "Jade Ring"
 # player_jade.set_player_equipments([a3, b3, d3, ''])
 # player_jade.generate_att_from_equip()
-# simulation(player_jade, 1, 1000, "hypothesis3-JadeRing", True)
+# simulation(player_jade, 1, 10, "hypothesis3-JadeRing", True, profession=None)
 ############
 
-test_correlation_others("crit_power")
+# test_correlation_others("crit_power", profession = None)
