@@ -682,6 +682,7 @@ Geologist_player.set_player_equipments(['', '', '', ''])
 Geologist_player.generate_att_from_equip()
 simulation_hypo2(Miner_player, 1, 500, "hypothesis2-Miner", True, a)
 simulation_hypo2(Miner_player, 1, 500, "hypothesis2-Geologist", True, b)
+# simulation_hypo2(Miner_player, 1, 500, "hypothesis2-Geologist", True, a)
 
 ############
 # hypothesis3 #
