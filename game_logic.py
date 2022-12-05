@@ -397,7 +397,9 @@ class Floor:
         elif 80 <= level:
             columnName = '80+'
         possibility_list = self.r[columnName].values.tolist()
+        #add all items into a container, and all the possibilities into the container as well
         item_list = self.r.index.tolist()
+        # randomly generate item from the container based on the possibilities
         output = random.choices(item_list, weights=possibility_list, k=1)
         return output
 
@@ -413,9 +415,19 @@ class Floor:
         for i in range(0, int((rocks_num / denominator) * numerator)):
             rock = self.randomItem(self.level)[0]
             self.floor_containers.append(rock)
-            if player_pro == 'Geologist' and rock in ['Emerald', 'Aquamarine', 'Ruby', 'Amethyst', 'Topaz', 'Jade', 'Diamond']:
-                self.total_value += Rock().rockValue(rock) * (Rock().rockNum(rock) + 1)
+            #if the player profession is geologist, and rock is in the gem catogary
+            if player_pro == 'Geologist' and rock in ['Emerald', 'Aquamarine', 'Ruby', 'Amethyst', 'Topaz', 'Jade',
+                                                      'Diamond']:
+                #there is 50% chance for gems to increase 1
+                chance = random.randint(0, 1)
+
+                if chance == 1:
+                    #the number of gems increase one
+                    self.total_value += Rock().rockValue(rock) * (Rock().rockNum(rock) + 1)
+                else:
+                    self.total_value += Rock().rockValue(rock) * Rock().rockNum(rock)
             else:
+                # the number of rocks remain same
                 self.total_value += Rock().rockValue(rock) * Rock().rockNum(rock)
         return self.floor_containers, self.total_value
 
@@ -660,8 +672,8 @@ def simulation_hypo2(player: Player, start_level: int, running_num: int, scenari
     if if_drawn:
         plt.hist(value_record, bins=40, label = profession)
         plt.savefig(scenario + "-" + "-" + str(running_num))
-        plt.xlabel("Number of Simulation", fontsize=12)
-        plt.ylabel("Total Value", fontsize=12)
+        plt.ylabel("Number of Simulation", fontsize=12)
+        plt.xlabel("Total Value", fontsize=12)
         handles = [Rectangle((0, 0), 1, 1, color=c) for c in ["Blue", "Orange"]]
         labels = ["Miner", "Geologist"]
         plt.legend(handles, labels)
