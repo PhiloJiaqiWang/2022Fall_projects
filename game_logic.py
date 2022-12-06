@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
-import numpy
 import random
 import matplotlib
 
@@ -551,8 +550,13 @@ def simulation(player: Player, start_level: int, running_num: int, scenario: str
         value_record.append(this_time.total_value)
     print(value_record)
     if if_drawn:
-        plt.hist(value_record, bins=40)
+        plt.hist(value_record, bins=40, label = profession)
         plt.savefig(scenario + "-" + "-" + str(running_num))
+        plt.xlabel("Number of Simulation", fontsize=12)
+        plt.ylabel("Total Value", fontsize=12)
+        handles = [Rectangle((0, 0), 1, 1, color=c) for c in ["Blue", "Orange"]]
+        labels = ["Ruby Ring", "Jade Ring"]
+        plt.legend(handles, labels)
     print("The average value the player gained in this scenario is:" + str(sum(value_record) / len(value_record)))
     return sum(value_record) / len(value_record)
 
@@ -577,7 +581,7 @@ def test_correlation_damage():
         min_damage = i
         max_damage = i + 10
         player_tp.set_player_att([min_damage, max_damage, 0, 0, 0, 0, 0, 0])
-        result_lis.append(simulation(player_tp, 1, 100, "correlation_with_damage", False))
+        result_lis.append(simulation(player_tp, 1, 100, "correlation_with_damage", False, profession=None))
         x_axis.append(i)
     print(x_axis)
     print(result_lis)
@@ -619,19 +623,40 @@ def test_correlation_others(attr: str, profession):
 # hypothesis1 #
 # When equipped with the infinity dagger, it is more rewarding to start from 80th floor than from 0 floor. #
 ############
-# player1 = Player()
-# a = 'Sneakers'
-# equ = Equipment(a)
-# b = "Infinity Dagger"
-# equ = Equipment(b)
-# player1.set_player_equipments([a, b, '', ''])
-# player1.generate_att_from_equip()
-# simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
-# simulation(player1, 80, 1000, "hypothesis1-80", True,profession=None)
-############
+player1 = Player()
+a = 'Sneakers'
+b = "Infinity Dagger"
+player1.set_player_equipments([a, b, '', ''])
+player1.generate_att_from_equip()
+s1 = simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
+s2 = simulation(player1, 80, 1000, "hypothesis1-80", True,profession=None)
+print("The average value the player gained in this hypothesis1-1 is:" + str(s1))
+print("The average value the player gained in this shypothesis1-80 is:" + str(s2))
+# ############
 
 ############
-# hypothesis 2 #
+# hypothesis2 #
+# The ruby ring is more useful than the jade ring when equipped with Burglar's Shank. #
+############
+
+player_ruby = Player()
+a3 = 'Sneakers'
+b3 = "Burglar's Shank"
+c3 = "Ruby Ring"
+player_ruby.set_player_equipments([a3, b3, c3, ''])
+player_ruby.generate_att_from_equip()
+s3 = simulation(player_ruby, 1, 1000, "hypothesis3-RubyRing", True, profession=None)
+player_jade = Player()
+d3 = "Jade Ring"
+player_jade.set_player_equipments([a3, b3, d3, ''])
+player_jade.generate_att_from_equip()
+s4 = simulation(player_jade, 1, 1000, "hypothesis3-JadeRing", True, profession=None)
+print("The average value the player gained in this hypothesis2-RubyRing is:" + str(s3))
+print("The average value the player gained in this shypothesis2-JadeRing is:" + str(s4))
+# ############
+
+############
+# hypothesis 3 #
 # When reaching level 5 of mining skill, it is more rewarding to choose miner than geologist. #
 # We set the player equipments Sneakers and Infinity Dagger #
 # run the simulation 500 times each for miner and geologist #
@@ -682,25 +707,7 @@ Geologist_player.set_player_equipments(['', '', '', ''])
 Geologist_player.generate_att_from_equip()
 simulation_hypo2(Miner_player, 1, 500, "hypothesis2-Miner", True, a)
 simulation_hypo2(Miner_player, 1, 500, "hypothesis2-Geologist", True, b)
-# simulation_hypo2(Miner_player, 1, 500, "hypothesis2-Geologist", True, a)
+simulation_hypo2(Miner_player, 1, 500, "hypothesis2-Geologist", True, a)
 
-############
-# hypothesis3 #
-# The ruby ring is more useful than the jade ring when equipped with Burglar's Shank. #
-############
 
-# player_ruby = Player()
-# a3 = 'Sneakers'
-# b3 = "Burglar's Shank"
-# c3 = "Ruby Ring"
-# player_ruby.set_player_equipments([a3, b3, c3, ''])
-# player_ruby.generate_att_from_equip()
-# simulation(player_ruby, 1, 10, "hypothesis3-RubyRing", True, profession=None)
-# player_jade = Player()
-# d3 = "Jade Ring"
-# player_jade.set_player_equipments([a3, b3, d3, ''])
-# player_jade.generate_att_from_equip()
-# simulation(player_jade, 1, 10, "hypothesis3-JadeRing", True, profession=None)
-############
-
-# test_correlation_others("crit_power", profession = None)
+#test_correlation_damage()
