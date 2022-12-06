@@ -15,7 +15,9 @@ from matplotlib.patches import Rectangle
 ############
 @dataclass
 class Equipment:
-
+    """
+    Initiate function for the equipment.
+    """
     def __init__(self, name):
         """
         Initiate function for the players.
@@ -61,6 +63,7 @@ class Player:
     def set_profession(self, profession):
         """
         At 5 level Mininh skills, we can Choose Miner(+1 ore per vein) or Geologist(Chance for gems to appear in pairs)
+        :param profession: the mining profession, either Miner or Geologist
         >>> player1 = Player()
         >>> player1.set_profession(['Miner'])
         >>> player1.player_pro
@@ -75,8 +78,11 @@ class Player:
         10 level: If choosing Miner in level 5, here choose between Blacksmith(Copper, Iron, Gold, Iridium,
         & Radioactive worth 50% more) and Prospector(Chance to find coal doubled). If choosing Geologist before, choose
         Excavator(Chance to find geodes doubled) or Gemologist(Gems worth 30% more)
-
         :param skill_level: the mining skill level, 0-10
+        >>> player1 = Player()
+        >>> player1.set_skill_level(5)
+        >>> player1.player_skill_level
+        5
         """
         self.player_skill_level = skill_level
 
@@ -84,13 +90,21 @@ class Player:
         """
         to set the equipments the player is wearing.
         :param equipments: [weapon, footwear, ring_one, ring_two]
+        >>> player1 = Player()
+        >>> player1.set_player_equipments('weapon')
+        >>> player1.player_equipments
+        'weapon'
         """
         self.player_equipments = equipments
 
     def set_player_att(self, given_lis):
         """
         to set the attributes of this player manually
-
+        :param equipments: [3, 5, 0, 0, 0, 0, 0, 0]
+        >>> player1 = Player()
+        >>> player1.set_player_att([3, 5, 0, 0, 0, 0, 0, 0])
+        >>> player1.player_att
+        [3, 5, 0, 0, 0, 0, 0, 0]
         """
         self.player_att = given_lis
 
@@ -152,12 +166,16 @@ class Player:
         calculate the value.
 
         :param health_energy_lis: [health, energy]
+        >>> player1 = Player()
+        >>> player1.set_player_health_energy([100,200])
+        >>> player1.player_health_energy
+        [100,200]
         """
         self.player_health_energy = health_energy_lis
 
     def print_player_info(self):
         """
-
+        print the player information: player skill level, player equipments, player health energy
         :return:
         """
         print("******PLAYER******")
@@ -193,16 +211,33 @@ class Rock:
 
     # read the rock spreadsheet
     def __init__(self):
+        """
+        read rock items and possibility table into the program
+        """
         self.r = pd.read_csv('rock.csv')
         self.r.set_index("item", inplace=True)
 
     # find rock sell price
     def rockValue(self, name):
+        """
+        get the value of the item dropped from rock from the dictionary
+        :param name: the name of the item dropped from rock
+        >>> rock1 = Rock()
+        >>> rock1.rockValue('Stone')
+        '2'
+        """
         value = self.r.loc[name]['price']
         return value
 
     # generate the number of rock randomly by normal distribution
     def rockNum(self, name):
+        """
+        get the number of the item dropped from rock from the dictionary
+        :param name: the name of the item dropped from rock
+        >>> rock1 = Rock()
+        >>> rock1.rocknum('Nothing')
+        '1'
+        """
         min_num = self.r.loc[name]['min_num']
         max_num = self.r.loc[name]['max_num']
         number = round(random.uniform(min_num, max_num), 0)
@@ -376,6 +411,10 @@ class Floor:
     """
 
     def __init__(self, level):
+        """
+        initiate the floor, read the rock csv file, and then input the level information, create floor container
+        :param level: input the level number
+        """
         self.r = pd.read_csv('rock.csv')
         self.r.set_index("item", inplace=True)
         self.level = level
@@ -385,6 +424,8 @@ class Floor:
 
     def randomItem(self, level):
         """
+        based on th level input, randomly generate item from the container based on the possibilities
+        :param level: input the level number
         >>> cur_floor = Floor(5)
         >>> cur_floor.randomItem(5)
         ['nothing']
@@ -407,6 +448,9 @@ class Floor:
     def generate_rock_list(self, denominator: int, numerator: int, player_pro):
         """
         generate all the rocks in this floor.
+        :param denominator: the number of total monster
+        :param numerator: the number of monsters have been killed
+        :param player_pro: player profession
         """
         rocks_num = random.randint(30, 50)
         if player_pro == 'Miner':
@@ -480,7 +524,7 @@ class MainGame:
         """
         simulate one floor
 
-        :param level:
+        :param level: the level number
         :return:
         """
         monsters = Floor(level).generate_monster_list()
