@@ -5,7 +5,9 @@ import random
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+
 matplotlib.use('TkAgg')
+
 
 ############
 # Player #
@@ -19,6 +21,7 @@ class Equipment:
     file into dataframe and search for the data based on the name of the equipments.
     If the name is not in the file, it will generate a list of zeros.
     """
+
     def __init__(self, name):
         """
         Initiate function for the equipment.
@@ -285,16 +288,16 @@ class Monster(object):
 
     def __init__(self, level):
         """
-        Create a monster with its name.
+        Create a monster with its level.
         """
         self.level = level
         self.if_bottom()
 
-    def if_bottom(self):
+    def if_bottom(self) -> bool:
         """
         decide if the monster is in 120th floor
 
-        :return: self.level
+        :return: boolean value indicating if the monster is at the bottom level.
 
         >>> monster_test = Monster(120)
         >>> monster_test.if_bottom()
@@ -305,7 +308,7 @@ class Monster(object):
             self.drop_rate = {"Diamond": 0.0005, "Prismatic Shard": 0.0005, "nothing": 0.999}
         return result
 
-    def generate_value(self):
+    def generate_value(self) -> float:
         """
         When the monster is defeated, it will drop things. This function will generate the value of the items that
         the monster drops so that it can be added into the total value
@@ -328,7 +331,7 @@ class Monster(object):
             total_val += self.drop_value[i]
         return total_val
 
-    def print_monster_info(self):
+    def print_monster_info(self) -> None:
         """
         print all the monster's information
 
@@ -364,7 +367,8 @@ class GreenSlime(Slime):
     """A GreenSlime is a kind of Slime that could be found on any level in the Mines."""
     HP, damage, defense, XP = 24, 5, 1, 3
 
-    def drop(self):
+    def drop(self) -> None:
+        """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Amethyst": 0.015, "Dwarf Scroll I": 0.005, "Dwarf Scroll II": 0.001, "Green Algae": 0.1,
                                "Sap": 0.15, "Slime": 0.8})  # TODO: Slime Hutch?
 
@@ -374,7 +378,8 @@ class FrostJelly(Slime):
     # TODO: can sometimes be found on other floors? sr. https://stardewvalleywiki.com/Slimes
     HP, damage, defense, XP = 106, 7, 0, 6  # TODO: the attack might grow
 
-    def drop(self):
+    def drop(self) -> None:
+        """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Dwarf Scroll II": 0.005, "Dwarf Scroll III": 0.015, "Dwarf Scroll IV": 0.001,
                                "Jade": 0.02, "Sap": 0.5, "Slime": 0.75, "Winter Root": 0.08})
         # TODO: Slime Hutch?
@@ -384,7 +389,8 @@ class RedSludge(Slime):
     """A GreenSlime is a kind of Slime that could be found on any level in the Mines."""
     HP, damage, defense, XP = 205, 16, 0, 10
 
-    def drop(self):
+    def drop(self) -> None:
+        """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Coal": 0.01, "Dwarf Scroll III": 0.005, "Dwarf Scroll II": 0.001, "Green Algae": 0.1,
                                "Sap": 0.5, "Slime": 0.8, "White Algae": 0.1})  # TODO: Slime Hutch?
         self.drop_rate["Diamond"] = 0.01
@@ -397,7 +403,8 @@ class Bug(Monster):
     """
     HP, damage, defense, speed, XP = 1, 8, 0, 2, 1
 
-    def drop(self):
+    def drop(self) -> None:
+        """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Ancient Seed": 0.005, "Bug Meat": 0.76, "Dwarf Scroll I": 0.005,
                                "Dwarf Scroll IV": 0.001, "White Algae": 0.02})
 
@@ -409,7 +416,8 @@ class Bat(Monster):
     """
     HP, damage, defense, speed, XP = 24, 6, 1, 3, 3
 
-    def drop(self):
+    def drop(self) -> None:
+        """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Bat Wings": 0.94, "Bomb": 0.02, "Dwarf Scroll I": 0.005,
                                "Dwarf Scroll IV": 0.001, "Rare Disc": 0.01})
 
@@ -418,7 +426,8 @@ class FrostBat(Bat):
     """A FrostBat is a variation of Bat and could only be found on level 41-79 in the Mines."""
     HP, damage, XP = 36, 7, 7
 
-    def drop(self):
+    def drop(self) -> None:
+        """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Bat Wings": 0.95, "Bomb": 0.02, "Dwarf Scroll II": 0.005,
                                "Dwarf Scroll IV": 0.001, "Rare Disc": 0.01})
 
@@ -427,7 +436,8 @@ class LavaBat(Bat):
     """A LavaBat is a variation of Bat and could only be found on level 81-119 in the Mines."""
     HP, damage, XP = 80, 15, 15
 
-    def drop(self):
+    def drop(self) -> None:
+        """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Bat Wings": 0.97, "Bomb": 0.02, "Dwarf Scroll III": 0.005,
                                "Dwarf Scroll IV": 0.001, "Rare Disc": 0.01})
 
@@ -444,7 +454,8 @@ class RockCrab(Crab):
     """A RockCrab is a variation of Crab and could only be found on level 1-29 in the Mines."""
     HP, damage, defense, speed, XP = 30, 5, 1, 2, 4
 
-    def drop(self):
+    def drop(self) -> None:
+        """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Cherry Bomb": 0.4, "Crab": 0.15, "Dwarf Scroll I": 0.005, "Dwarf Scroll IV": 0.001})
 
 
@@ -452,7 +463,8 @@ class LavaCrab(Crab):
     """A LavaCrab is a variation of Crab and could only be found on level 80-119 in the Mines."""
     HP, damage, defense, speed, XP = 120, 15, 3, 3, 12
 
-    def drop(self):
+    def drop(self) -> None:
+        """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Bomb": 0.4, "Crab": 0.25, "Dwarf Scroll III": 0.005, "Dwarf Scroll IV": 0.001})
 
 
@@ -531,10 +543,10 @@ class Floor:
                 self.total_value += Rock().rockValue(rock) * Rock().rockNum(rock)
         return self.floor_containers, self.total_value
 
-    def generate_monster_list(self):
+    def generate_monster_list(self) -> list:
         """
         Generate all the monsters in this floor. Probs for defined monsters could be changed to be passed in.
-        :return self.floor_monsters
+        :return self.floor_monsters that includes the list of monsters
 
         >>> cur_floor = Floor(5)
         >>> 5 < len(cur_floor.generate_monster_list()) < 10
@@ -657,8 +669,8 @@ class MainGame:
         """
         player_damage = random.randint(int(player.player_att[0]), int(player.player_att[1] + 1))
         crit_chance = player.player_att[2] + 0.02 * player.player_att[3]
-        if_crit = random.choices([1, 0], weights=(crit_chance, (1-crit_chance)))
-        total_damage_player = player_damage - monster.defense + if_crit[0] * (3 + player.player_att[4])/50
+        if_crit = random.choices([1, 0], weights=(crit_chance, (1 - crit_chance)))
+        total_damage_player = player_damage - monster.defense + if_crit[0] * (3 + player.player_att[4]) / 50
         total_damage_monster = monster.damage - player.player_att[3]
         if total_damage_player < 1:
             total_damage_player = 1
@@ -706,7 +718,7 @@ def simulation(player: Player, start_level: int, running_num: int, scenario: str
         this_time = MainGame(start_level, player, profession)
         value_record.append(this_time.total_value)
     if if_drawn:
-        plt.hist(value_record, bins=40, label = profession)
+        plt.hist(value_record, bins=40, label=profession)
         plt.savefig(scenario + "-" + "-" + str(running_num))
         plt.xlabel("Number of Simulation", fontsize=12)
         plt.ylabel("Total Value", fontsize=12)
@@ -790,7 +802,7 @@ if __name__ == '__main__':
     player1.set_player_equipments([equ1, equ2, '', ''])
     player1.generate_att_from_equip()
     s1 = simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
-    s2 = simulation(player1, 80, 1000, "hypothesis1-80", True,profession=None)
+    s2 = simulation(player1, 80, 1000, "hypothesis1-80", True, profession=None)
     print("The average value the player gained in this hypothesis1-1 is:" + str(s1))
     print("The average value the player gained in this shypothesis1-80 is:" + str(s2))
     ############
