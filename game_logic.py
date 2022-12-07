@@ -74,7 +74,7 @@ class Player:
         :param profession: the mining profession, either Miner or Geologist
         >>> player_test = Player()
         >>> player_test.set_profession(['Miner'])
-        >>> player_test.player_pro
+        >>> player_test.player_profession
         ['Miner']
         """
         self.player_profession = profession
@@ -99,7 +99,7 @@ class Player:
         to set the equipments the player is wearing.
         :param equipments: [footwear, weapon, ring_one, ring_two]
         >>> player_test = Player()
-        >>> player_test.set_player_equipments('weapon')
+        >>> player_test.set_player_equipments(['weapon'])
         >>> player_test.player_equipments
         'weapon'
         """
@@ -264,7 +264,7 @@ class Rock:
         get the number of the item dropped from rock from the dictionary
         :param name: the name of the item dropped from rock
         >>> rock1 = Rock()
-        >>> rock1.rocknum('Nothing')
+        >>> rock1.rockNum('Nothing')
         '1'
         """
         min_num = self.r.loc[name]['min_num']
@@ -281,7 +281,8 @@ class Monster(object):
     The monsters' information are from https://stardewvalleywiki.com/Monsters.
     Monsters are randomly distributed on floors, and when killed, they have a set probability to drop reward items.
     Different levels have different kinds of monsters that have different dropping rates. Only four categories of
-    monsters (Slime, Bug, Bat, Crab) are included for the simplicity of the program.
+    monsters (Slime, Bug, Bat, Crab) are included for the simplicity of the program. A total of 9 monsters are included
+    below.
     """
     killable, HP, damage, defense, speed, XP, drop_rate = True, 0, 0, 0, 0, 0, {}
     drop_value = {"Diamond": 750, "Prismatic Shard": 2000, "Amethyst": 100, "Dwarf Scroll I": 1, "Dwarf Scroll II": 1,
@@ -291,14 +292,15 @@ class Monster(object):
 
     def __init__(self, level):
         """
-        Create a monster with its level.
+        Create a monster based on its level.
+        :param level: the level on which the monster appears
         """
         self.level = level
         self.if_bottom()
 
     def if_bottom(self) -> bool:
         """
-        Decide if the monster is in 120th floor
+        Decide if the monster is in 120th floor.
 
         :return: boolean value indicating if the monster is at the bottom level.
 
@@ -534,7 +536,7 @@ class Floor:
         for i in range(0, int((rocks_num / denominator) * numerator)):
             rock = self.randomItem(self.level)[0]
             self.floor_containers.append(rock)
-            # if the player profession is geologist, and rock is in the gem catogary
+            # if the player profession is geologist, and rock is in the gem category
             if player_pro == 'Geologist' and rock in ['Emerald', 'Aquamarine', 'Ruby', 'Amethyst', 'Topaz', 'Jade',
                                                       'Diamond']:
                 # there is 50% chance for gems to increase 1
@@ -707,6 +709,7 @@ def simulation(player: Player, start_level: int, running_num: int, scenario: str
     :param running_num: the number of simulation
     :param scenario: the number of simulation
     :param if_drawn: if generate the chart
+    :param profession: the profession of the player
     :return: the average value of every simulation
 
     >>> player_test = Player()
@@ -792,7 +795,7 @@ def test_correlation_damage():
     print(x_axis)
     print(result_lis)
     plt.plot(x_axis, result_lis, linestyle='dotted')
-    plt.savefig("DamagaAndValue")
+    plt.savefig("DamageAndValue")
     corr = np.corrcoef(x_axis, result_lis)
     print(corr)
     return corr
@@ -811,7 +814,7 @@ if __name__ == '__main__':
     s1 = simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
     s2 = simulation(player1, 80, 1000, "hypothesis1-80", True, profession=None)
     print("The average value the player gained in this hypothesis1-1 is:" + str(s1))
-    print("The average value the player gained in this shypothesis1-80 is:" + str(s2))
+    print("The average value the player gained in this hypothesis1-80 is:" + str(s2))
     ############
 
     ############
@@ -831,7 +834,7 @@ if __name__ == '__main__':
     player_jade.generate_att_from_equip()
     s4 = simulation(player_jade, 1, 1000, "hypothesis3-JadeRing", True, profession=None)
     print("The average value the player gained in this hypothesis2-RubyRing is:" + str(s3))
-    print("The average value the player gained in this shypothesis2-JadeRing is:" + str(s4))
+    print("The average value the player gained in this hypothesis2-JadeRing is:" + str(s4))
     ############
 
     ##########
