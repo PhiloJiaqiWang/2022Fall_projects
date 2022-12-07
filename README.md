@@ -1,6 +1,8 @@
 # 2022Fall_projects
+![Image text](https://raw.github.com/yourName/repositpry/master/yourprojectName/img-folder/test.jpg)
 ## Game Background
-Stardew Valley is an open-ended country-life RPG! You’ve inherited your grandfather’s old farm plot in Stardew Valley. There is one part in this game that you can take adventures under the mines. There are 120 floors (sometimes called levels) in the Mines. Ore type and quantity increases as The Player moves deeper into the Mines. The Mines are filled with rocks and dirt patches. Rocks can be mined with a Pickaxe in order to obtain Stone, ore and Geodes. To advance deeper in the Mines, a ladder must be revealed on each floor. The ladder will appear after breaking rocks or after defeating an enemy (killing enemies is the stamina-free option to finding ladders). 
+Stardew Valley is an open-ended country-life RPG! You’ve inherited your grandfather’s old farm plot in Stardew Valley. There is one part in this game that you can take adventures under the mines. There are 120 floors (sometimes called levels) in the Mines. Ore type and quantity increases as The Player moves deeper into the Mines.  
+The Mines are filled with rocks and dirt patches. Rocks can be mined with a Pickaxe in order to obtain Stone, ore and Geodes. To advance deeper in the Mines, a ladder must be revealed on each floor. The ladder will appear after breaking rocks or after defeating an enemy (killing enemies is the stamina-free option to finding ladders). 
 ## The Mines
 Elements
 Floor
