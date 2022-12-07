@@ -278,7 +278,10 @@ class Rock:
 ############
 class Monster(object):
     """
-    The monsters information is here https://stardewvalleywiki.com/Monsters.
+    The monsters' information are from https://stardewvalleywiki.com/Monsters.
+    Monsters are randomly distributed on floors, and when killed, they have a set probability to drop reward items.
+    Different levels have different kinds of monsters that have different dropping rates. Only four categories of
+    monsters (Slime, Bug, Bat, Crab) are included for the simplicity of the program.
     """
     killable, HP, damage, defense, speed, XP, drop_rate = True, 0, 0, 0, 0, 0, {}
     drop_value = {"Diamond": 750, "Prismatic Shard": 2000, "Amethyst": 100, "Dwarf Scroll I": 1, "Dwarf Scroll II": 1,
@@ -295,7 +298,7 @@ class Monster(object):
 
     def if_bottom(self) -> bool:
         """
-        decide if the monster is in 120th floor
+        Decide if the monster is in 120th floor
 
         :return: boolean value indicating if the monster is at the bottom level.
 
@@ -310,8 +313,8 @@ class Monster(object):
 
     def generate_value(self) -> float:
         """
-        When the monster is defeated, it will drop things. This function will generate the value of the items that
-        the monster drops so that it can be added into the total value
+        When the monster is defeated, it drops reward items. This function will generate the value of the items that
+        the monster drops so that it can be added into the total value.
 
         :return: the total value of the items which the monster drops when defeated
 
@@ -333,7 +336,7 @@ class Monster(object):
 
     def print_monster_info(self) -> None:
         """
-        print all the monster's information
+        Print all the monster's information.
 
         >>> slime_one = GreenSlime(1)
         >>> slime_one.drop()
@@ -359,6 +362,7 @@ class Slime(Monster):
     """
     A Slime is one of the monster categories. It has several specifications including GreenSlime, FrostJelly, and
     RedSludge. A Slime itself is not a kind of monster that will show up in the Mines.
+    Slime hutch is not considered for the simplicity of the program.
     """
     speed = 2
 
@@ -370,19 +374,22 @@ class GreenSlime(Slime):
     def drop(self) -> None:
         """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Amethyst": 0.015, "Dwarf Scroll I": 0.005, "Dwarf Scroll II": 0.001, "Green Algae": 0.1,
-                               "Sap": 0.15, "Slime": 0.8})  # TODO: Slime Hutch?
+                               "Sap": 0.15, "Slime": 0.8})
 
 
 class FrostJelly(Slime):
-    """A FrostJelly is a kind of Slime that could only be found on level 41-79 in the Mines."""
-    # TODO: can sometimes be found on other floors? sr. https://stardewvalleywiki.com/Slimes
-    HP, damage, defense, XP = 106, 7, 0, 6  # TODO: the attack might grow
+    """
+    A FrostJelly is a kind of Slime that could only be found on level 41-79 in the Mines.
+    In actual game, FrostJellies could sometimes be found on other floors, which will not be considered in this program.
+    The attack of the FrostJelly is also fixed for simplicity.
+    sr. https://stardewvalleywiki.com/Slimes
+    """
+    HP, damage, defense, XP = 106, 7, 0, 6
 
     def drop(self) -> None:
         """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Dwarf Scroll II": 0.005, "Dwarf Scroll III": 0.015, "Dwarf Scroll IV": 0.001,
                                "Jade": 0.02, "Sap": 0.5, "Slime": 0.75, "Winter Root": 0.08})
-        # TODO: Slime Hutch?
 
 
 class RedSludge(Slime):
@@ -392,7 +399,7 @@ class RedSludge(Slime):
     def drop(self) -> None:
         """Update the dropping rate for each possible reward items"""
         self.drop_rate.update({"Coal": 0.01, "Dwarf Scroll III": 0.005, "Dwarf Scroll II": 0.001, "Green Algae": 0.1,
-                               "Sap": 0.5, "Slime": 0.8, "White Algae": 0.1})  # TODO: Slime Hutch?
+                               "Sap": 0.5, "Slime": 0.8, "White Algae": 0.1})
         self.drop_rate["Diamond"] = 0.01
 
 
