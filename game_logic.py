@@ -4,6 +4,7 @@ import pandas as pd
 import random
 import matplotlib
 import matplotlib.pyplot as plt
+from numba import jit
 from matplotlib.patches import Rectangle
 
 matplotlib.use('TkAgg')
@@ -803,6 +804,7 @@ def simulation_multiprocessing(player: Player, start_level: int, running_num: in
 ############
 # 1. Statistical convergence ---see the output image
 # 2. Control all other variables, to see if each component and the outcomes have a logical correlation
+@jit(nopython=True)
 def test_correlation_damage():
     """
     Control all other variables, to see if each component and the outcomes have a logical correlation
