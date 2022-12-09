@@ -890,9 +890,9 @@ if __name__ == '__main__':
     test_correlation_damage()
 
     ############
-    # multiprocessing - small_demo - running_num = 10 - processes=3#
+    # multiprocessing - small_demo - running_num = 10 - processes=5#
     # Without multiprocessing, process run time was 1.8769958019256592
-    # With multiprocessing, process run time was 1.532944917678833
+    # With multiprocessing, process run time was 0.8834540843963623
     ############
     player_mul = Player()
     equ1_mul = 'Sneakers'
