@@ -4,7 +4,8 @@ import pandas as pd
 import random
 import matplotlib
 import matplotlib.pyplot as plt
-from numba import jit
+import time
+import multiprocessing
 from matplotlib.patches import Rectangle
 
 matplotlib.use('TkAgg')
@@ -804,7 +805,8 @@ def simulation_multiprocessing(player: Player, start_level: int, running_num: in
 ############
 # 1. Statistical convergence ---see the output image
 # 2. Control all other variables, to see if each component and the outcomes have a logical correlation
-@jit(nopython=True)
+
+
 def test_correlation_damage():
     """
     Control all other variables, to see if each component and the outcomes have a logical correlation
@@ -836,35 +838,35 @@ if __name__ == '__main__':
     # hypothesis1 #
     # When equipped with the infinity dagger, it is more rewarding to start from 80th floor than from 0 floor. #
     ############
-    player1 = Player()
-    equ1 = 'Sneakers'
-    equ2 = "Infinity Dagger"
-    player1.set_player_equipments([equ1, equ2, '', ''])
-    player1.generate_att_from_equip()
-    s1 = simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
-    s2 = simulation(player1, 80, 1000, "hypothesis1-80", True, profession=None)
-    print("The average value the player gained in this hypothesis1-1 is:" + str(s1))
-    print("The average value the player gained in this hypothesis1-80 is:" + str(s2))
+    # player1 = Player()
+    # equ1 = 'Sneakers'
+    # equ2 = "Infinity Dagger"
+    # player1.set_player_equipments([equ1, equ2, '', ''])
+    # player1.generate_att_from_equip()
+    # s1 = simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
+    # s2 = simulation(player1, 80, 1000, "hypothesis1-80", True, profession=None)
+    # print("The average value the player gained in this hypothesis1-1 is:" + str(s1))
+    # print("The average value the player gained in this hypothesis1-80 is:" + str(s2))
     ############
 
     ############
     # hypothesis2 #
     # The ruby ring is more useful than the jade ring when equipped with Burglar's Shank. #
     ############
-    player_ruby = Player()
-    equ3 = 'Sneakers'
-    equ4 = "Burglar's Shank"
-    equ5 = "Ruby Ring"
-    player_ruby.set_player_equipments([equ3, equ4, equ5, ''])
-    player_ruby.generate_att_from_equip()
-    s3 = simulation(player_ruby, 1, 1000, "hypothesis3-RubyRing", True, profession=None)
-    player_jade = Player()
-    equ6 = "Jade Ring"
-    player_jade.set_player_equipments([equ3, equ4, equ6, ''])
-    player_jade.generate_att_from_equip()
-    s4 = simulation(player_jade, 1, 1000, "hypothesis3-JadeRing", True, profession=None)
-    print("The average value the player gained in this hypothesis2-RubyRing is:" + str(s3))
-    print("The average value the player gained in this hypothesis2-JadeRing is:" + str(s4))
+    # player_ruby = Player()
+    # equ3 = 'Sneakers'
+    # equ4 = "Burglar's Shank"
+    # equ5 = "Ruby Ring"
+    # player_ruby.set_player_equipments([equ3, equ4, equ5, ''])
+    # player_ruby.generate_att_from_equip()
+    # s3 = simulation(player_ruby, 1, 1000, "hypothesis3-RubyRing", True, profession=None)
+    # player_jade = Player()
+    # equ6 = "Jade Ring"
+    # player_jade.set_player_equipments([equ3, equ4, equ6, ''])
+    # player_jade.generate_att_from_equip()
+    # s4 = simulation(player_jade, 1, 1000, "hypothesis3-JadeRing", True, profession=None)
+    # print("The average value the player gained in this hypothesis2-RubyRing is:" + str(s3))
+    # print("The average value the player gained in this hypothesis2-JadeRing is:" + str(s4))
     ############
 
     ##########
@@ -875,21 +877,21 @@ if __name__ == '__main__':
     # compare the total gold gained from miner and geologist #
     # according to diagram and the mean gold value, the geologist can gain more gold than miner.
     ##########
-    a = 'Miner'
-    b = 'Geologist'
-    Miner_player = Player()
-    Geologist_player = Player()
-    Miner_player.set_profession([a])
-    Geologist_player.set_profession([b])
-    Miner_player.set_player_equipments(['Sneakers', "Infinity Dagger", '', ''])
-    Miner_player.generate_att_from_equip()
-    Geologist_player.set_player_equipments(['', '', '', ''])
-    Geologist_player.generate_att_from_equip()
-    simulation_hypo3(Miner_player, 1, 500, "hypothesis2-Miner", True, a)
-    simulation_hypo3(Miner_player, 1, 500, "hypothesis2-Geologist", True, b)
-    simulation_hypo3(Miner_player, 1, 500, "hypothesis2-Geologist", True, a)
-
-    test_correlation_damage()
+    # a = 'Miner'
+    # b = 'Geologist'
+    # Miner_player = Player()
+    # Geologist_player = Player()
+    # Miner_player.set_profession([a])
+    # Geologist_player.set_profession([b])
+    # Miner_player.set_player_equipments(['Sneakers', "Infinity Dagger", '', ''])
+    # Miner_player.generate_att_from_equip()
+    # Geologist_player.set_player_equipments(['', '', '', ''])
+    # Geologist_player.generate_att_from_equip()
+    # simulation_hypo3(Miner_player, 1, 500, "hypothesis2-Miner", True, a)
+    # simulation_hypo3(Miner_player, 1, 500, "hypothesis2-Geologist", True, b)
+    # simulation_hypo3(Miner_player, 1, 500, "hypothesis2-Geologist", True, a)
+    #
+    # test_correlation_damage()
 
     ############
     # multiprocessing - small_demo - running_num = 10 - processes=5#
