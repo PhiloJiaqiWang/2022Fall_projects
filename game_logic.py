@@ -769,6 +769,34 @@ def simulation_hypo3(player: Player, start_level: int, running_num: int, scenari
     print("The average value the player gained in this scenario is:" + str(sum(value_record) / len(value_record)))
     return sum(value_record) / len(value_record)
 
+def simulation_multiprocessing(player: Player, start_level: int, running_num: int,  profession):
+    """
+    simulation with multiprocessing
+
+    :param player: the player
+    :param start_level: the floor starting
+    :param running_num: the number of simulation
+    :return: the average value of every simulation
+
+    >>> player_test = Player()
+    >>> equ1_tp = 'Sneakers'
+    >>> equ2_tp = "Infinity Dagger"
+    >>> player_test.set_player_equipments([equ1_tp, equ2_tp, '', ''])
+    >>> player_test.generate_att_from_equip()
+    >>> simulation(player_test, 1, 1, profession=None) # doctest: +ELLIPSIS
+    ########0########
+    ...
+    """
+    value_record = []
+    pool = multiprocessing.Pool(processes=5)
+    for i in range(0, running_num):
+        print("########" + str(i) + "########")
+        player.reset()
+        pool.apply_async(func=MainGame, args=(start_level, player, profession, value_record))
+        #result_mul = pool.apply_async(func=return_mul_func, args=(start_level, player, profession)).get()
+        #value_record.append(result_mul)
+    pool.close()
+    pool.join()
 
 ############
 # Validating an MC simulation #
@@ -860,3 +888,22 @@ if __name__ == '__main__':
     simulation_hypo3(Miner_player, 1, 500, "hypothesis2-Geologist", True, a)
 
     test_correlation_damage()
+
+    ############
+    # multiprocessing - small_demo - running_num = 10 - processes=3#
+    # Without multiprocessing, process run time was 1.8769958019256592
+    # With multiprocessing, process run time was 1.532944917678833
+    ############
+    player_mul = Player()
+    equ1_mul = 'Sneakers'
+    equ2_mul = "Infinity Dagger"
+    player_mul.set_player_equipments([equ1_mul, equ2_mul, '', ''])
+    player_mul.generate_att_from_equip()
+    start1 = time.time()
+    sm1 = simulation(player_mul, 1, 10, "hypothesis1-1", False, profession=None)
+    end1 = time.time()
+    print("Without multiprocessing, process run time was " + str(end1 - start1))
+    simulation_multiprocessing(player_mul, 1, 10, profession=None)
+    end2 = time.time()
+    print("With multiprocessing, process run time was " + str(end2 - end1))
+    ############
