@@ -908,4 +908,5 @@ if __name__ == '__main__':
     simulation_multiprocessing(player_mul, 1, 10, profession=None)
     end2 = time.time()
     print("With multiprocessing, process run time was " + str(end2 - end1))
+
     ############
