@@ -165,15 +165,22 @@ Thus, this hypothesis is not valid.
 `The ruby ring is more useful than the jade ring when equipped with Burglar's Shank and starts from 1st floor.`  
   
   
-We simulate the program 1000 times. From the program output, the resulting average total value of Ruby Ring is 1275
-the average total value of Jade Ring is 1172
-![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/hypothesis3-RubyRing--1000.pngg)
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/img/%E6%88%AA%E5%B1%8F2022-12-05%2023.24.21.png)  
+We simulate the program 1000 times. From the program output, the resulting average total value of Ruby Ring is 1275  
+the average total value of Jade Ring is 1172  
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/hypothesis3-JadeRing--1000.png)  
 It is hard to see the result from the picture, and those two results are fairly close.  
-Thus we have run it for sevral time. In every time, the total value of Ruby Ring is greater than the Jade Ring.
-We accept the hypothsis.
+Thus we have run it for sevral time. In every time, the total value of Ruby Ring is greater than the Jade Ring.  
+We accept the hypothsis.  
 ## Hypothesis 3
 `When reaching level 5 of mining skills, it is more rewarding to choose miner than geologist.`  
   
-Method: fixed Parameter: Skill level 5, Player equipped with Sneakers and Infinity Dagger  
+Method: fixed Parameter: Skill level 5, Player equipped with Sneakers and Infinity Dagger    
 Variables: simulation 500 times of two professions, Miner and geologist. We compare the resulting total gold value of two different professions. Finally we choose either the miner or geologist to be the more rewarding profession.  
-
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/img/%E6%88%AA%E5%B1%8F2022-12-10%2010.41.45.png)
+We simulate the program 500 times. From the program output, the resulting average total value of Miner is 3593  
+the average total value of Geologist is 4262  
+From the histogram, we can see that the Geologist profession can produce more values than the Miner  
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/hypothesis2-Geologist--500.png)
+## Presentation
+see Video [here](https://mediaspace.illinois.edu/media/t/1_ikmjbvxq)
