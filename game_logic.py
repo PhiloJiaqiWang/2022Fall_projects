@@ -102,7 +102,7 @@ class Player:
         :param equipments: [footwear, weapon, ring_one, ring_two]
         >>> player_test = Player()
         >>> player_test.set_player_equipments(['weapon'])
-        >>> player_test.player_equipments
+        >>> player_test.player_equipments[0]
         'weapon'
         """
         self.player_equipments = equipments
@@ -127,7 +127,7 @@ class Player:
         >>> player_test.set_player_equipments(['Infinity Dagger', 'Crabshell Ring', '', ''])
         >>> player_test.generate_att_from_equip()
         >>> player_test.player_att
-        [50, 70, 0.06, 4, 0, 8, 0, 0]
+        [50, 70, 0.06, 4.0, 0.0, 8, 0, 0]
         """
         this_damage_min = 0
         this_damage_min_bonus = 0
@@ -179,7 +179,7 @@ class Player:
         >>> player_test = Player()
         >>> player_test.set_player_health_energy([100,200])
         >>> player_test.player_health_energy
-        [100,200]
+        [100, 200]
         """
         self.player_health_energy = health_energy_lis
 
@@ -255,7 +255,7 @@ class Rock:
         :param name: the name of the item dropped from rock
         >>> rock1 = Rock()
         >>> rock1.rockValue('Stone')
-        '2'
+        2.0
         """
         value = self.r.loc[name]['price']
         return value
@@ -267,7 +267,7 @@ class Rock:
         :param name: the name of the item dropped from rock
         >>> rock1 = Rock()
         >>> rock1.rockNum('Nothing')
-        '1'
+        1.0
         """
         min_num = self.r.loc[name]['min_num']
         max_num = self.r.loc[name]['max_num']
@@ -623,7 +623,9 @@ class MainGame:
         >>> player_test.set_player_equipments(['Infinity Dagger', 'Crabshell Ring', '', ''])
         >>> player_test.generate_att_from_equip()
         >>> game_test = MainGame(1, player_test, 'Miner') # doctest: +ELLIPSIS
-        total...
+        #####GameOver#####
+        total_value_gained: 0
+        survived between: [1, 1]
         >>> game_test.one_floor(1) # doctest: +ELLIPSIS
         #####GameOver#####
         total_value_gained: ...
@@ -771,6 +773,7 @@ def simulation_hypo3(player: Player, start_level: int, running_num: int, scenari
     print("The average value the player gained in this scenario is:" + str(sum(value_record) / len(value_record)))
     return sum(value_record) / len(value_record)
 
+
 def simulation_multiprocessing(player: Player, start_level: int, running_num: int,  profession):
     """
     simulation with multiprocessing
@@ -785,9 +788,8 @@ def simulation_multiprocessing(player: Player, start_level: int, running_num: in
     >>> equ2_tp = "Infinity Dagger"
     >>> player_test.set_player_equipments([equ1_tp, equ2_tp, '', ''])
     >>> player_test.generate_att_from_equip()
-    >>> simulation(player_test, 1, 1, profession=None) # doctest: +ELLIPSIS
+    >>> simulation_multiprocessing(player_test, 1, 1, profession=None) # doctest: +ELLIPSIS
     ########0########
-    ...
     """
     value_record = []
     pool = multiprocessing.Pool(processes=5)
@@ -803,10 +805,38 @@ def simulation_multiprocessing(player: Player, start_level: int, running_num: in
 ############
 # Validating an MC simulation #
 ############
+
+
 # 1. Statistical convergence ---see the output image
+def if_convergent(running_num):
+    """
+    draw a picture of the running_num and see if the total_value convergent in the end.
+
+    :param running_num: loop the simulation from 1 to running_num times
+    :return: the list of every final result
+    >>> a_tp = if_convergent(5) # doctest: +ELLIPSIS
+    ########0########
+    ...
+    >>> len(a_tp)
+    4
+    """
+    player_tp = Player()
+    x_axis = []
+    result_lis = []
+    for i in range(1, running_num):
+        player_tp.set_player_att([30, 40, 0, 0, 0, 0, 0, 0])
+        result_lis.append(simulation(player_tp, 1, i, "Total Value change", False, profession=None))
+        x_axis.append(i)
+    print(x_axis)
+    print(result_lis)
+    plt.plot(x_axis, result_lis, linestyle='dotted')
+    plt.ylabel("Total Value", fontsize=12)
+    plt.xlabel("Running Time", fontsize=12)
+    plt.savefig("TotalValue")
+    return result_lis
+
+
 # 2. Control all other variables, to see if each component and the outcomes have a logical correlation
-
-
 def test_correlation_damage():
     """
     Control all other variables, to see if each component and the outcomes have a logical correlation
@@ -834,19 +864,22 @@ def test_correlation_damage():
 
 
 if __name__ == '__main__':
+
+    # test_correlation_damage()
+    # if_convergent(500)
     ############
     # hypothesis1 #
     # When equipped with the infinity dagger, it is more rewarding to start from 80th floor than from 0 floor. #
     ############
-    # player1 = Player()
-    # equ1 = 'Sneakers'
-    # equ2 = "Infinity Dagger"
-    # player1.set_player_equipments([equ1, equ2, '', ''])
-    # player1.generate_att_from_equip()
-    # s1 = simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
-    # s2 = simulation(player1, 80, 1000, "hypothesis1-80", True, profession=None)
-    # print("The average value the player gained in this hypothesis1-1 is:" + str(s1))
-    # print("The average value the player gained in this hypothesis1-80 is:" + str(s2))
+    player1 = Player()
+    equ1 = 'Sneakers'
+    equ2 = "Infinity Dagger"
+    player1.set_player_equipments([equ1, equ2, '', ''])
+    player1.generate_att_from_equip()
+    s1 = simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
+    s2 = simulation(player1, 80, 1000, "hypothesis1-80", True, profession=None)
+    print("The average value the player gained in this hypothesis1-1 is:" + str(s1))
+    print("The average value the player gained in this hypothesis1-80 is:" + str(s2))
     ############
 
     ############
@@ -891,24 +924,23 @@ if __name__ == '__main__':
     # simulation_hypo3(Miner_player, 1, 500, "hypothesis2-Geologist", True, b)
     # simulation_hypo3(Miner_player, 1, 500, "hypothesis2-Geologist", True, a)
     #
-    # test_correlation_damage()
 
     ############
     # multiprocessing - small_demo - running_num = 10 - processes=5#
     # Without multiprocessing, process run time was 1.8769958019256592
     # With multiprocessing, process run time was 0.8834540843963623
     ############
-    player_mul = Player()
-    equ1_mul = 'Sneakers'
-    equ2_mul = "Infinity Dagger"
-    player_mul.set_player_equipments([equ1_mul, equ2_mul, '', ''])
-    player_mul.generate_att_from_equip()
-    start1 = time.time()
-    sm1 = simulation(player_mul, 1, 10, "hypothesis1-1", False, profession=None)
-    end1 = time.time()
-    print("Without multiprocessing, process run time was " + str(end1 - start1))
-    simulation_multiprocessing(player_mul, 1, 10, profession=None)
-    end2 = time.time()
-    print("With multiprocessing, process run time was " + str(end2 - end1))
-
+    # player_mul = Player()
+    # equ1_mul = 'Sneakers'
+    # equ2_mul = "Infinity Dagger"
+    # player_mul.set_player_equipments([equ1_mul, equ2_mul, '', ''])
+    # player_mul.generate_att_from_equip()
+    # start1 = time.time()
+    # sm1 = simulation(player_mul, 1, 10, "hypothesis1-1", False, profession=None)
+    # end1 = time.time()
+    # print("Without multiprocessing, process run time was " + str(end1 - start1))
+    # simulation_multiprocessing(player_mul, 1, 10, profession=None)
+    # end2 = time.time()
+    # print("With multiprocessing, process run time was " + str(end2 - end1))
     ############
+
