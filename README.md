@@ -3,6 +3,7 @@
 ## Game Background
 Stardew Valley is an open-ended country-life RPG! You’ve inherited your grandfather’s old farm plot in Stardew Valley. There is one part in this game that you can take adventures under the mines. There are 120 floors (sometimes called levels) in the Mines. Ore type and quantity increases as The Player moves deeper into the Mines.  
 The Mines are filled with rocks and dirt patches. Rocks can be mined with a Pickaxe in order to obtain Stone, ore and Geodes. To advance deeper in the Mines, a ladder must be revealed on each floor. The ladder will appear after breaking rocks or after defeating an enemy (killing enemies is the stamina-free option to finding ladders). 
+All the data and probability are listed on the [Stardew Valley Wiki](https://stardewvalleywiki.com/Stardew_Valley_Wiki).
 ## The Mines
 Elements
 - Floor  
@@ -127,4 +128,59 @@ class MainGame:
             self.survive_between[1] = level_start
 ```
 ## Variables
+- The number of rocks in every floor  
+uniformly distributed between [30,50]
+- The number of monsters in every floor  
+uniformly distributed between [5,10]
+- The item in the rock  
+see [Stardew Valley Wiki.com-The_Mines-Crates_and_Barrels](https://stardewvalleywiki.com/The_Mines#Crates_and_Barrels)
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/img/%E6%88%AA%E5%B1%8F2022-12-10%2010.17.13.png)
+- The monster type in every floor  
+see [Stardew Valley Wiki.com-Monsters](https://stardewvalleywiki.com/Monsters))
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/img/%E6%88%AA%E5%B1%8F2022-12-10%2010.17.52.png)
+- The item the monster drops  
+- The attack damage  
+uniformly distributed between [min_damage, max_damage]
+- The chance of critical attack and its power  
+## Basic Assumptions
+- There is no supplement to fulfill the health bar and energy bar. The exhaustion of either bar means the day ends.
+- When fighting with the monsters, the player and the monster take turns to attack each other.
+- The value of items are determined by the directly selling value, and the player won’t  process them into more valuable products.
+- The player will only enter the next floor after all the monsters are killed and all the items are collected.
+- If the game ends, the items the player gained in that level will be proportional to the monsters the player killed.
+- The attack damage will conform uniform distribution between min damage and max damage.
+- The numbers of rocks in every floor will conform uniform distribution between [30, 50], and monsters between [5,10]
 ## Hypothesis 1
+`When equipped with the infinity dagger, it is more rewarding to start from 80th floor than from 1st  floor.`  
+  
+  
+The player can choose to start from 1st, 10th, 20th…floor. When the floor is deeper, the rocks will generate more valuable items, 
+but the monsters will also advance.  
+We simulate the program 1000 times. From the program output, the resulting average total value of starting from 1st floor is 3618
+the average total value of starting from 80th is 1068.  
+From the histogram, we can see that it is more rewarding to start from 1st  floor than from 80th  floor.  
+Thus, this hypothesis is not valid.  
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/hypothesis1-80--1000.png)
+## Hypothesis 2
+`The ruby ring is more useful than the jade ring when equipped with Burglar's Shank and starts from 1st floor.`  
+  
+  
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/img/%E6%88%AA%E5%B1%8F2022-12-05%2023.24.21.png)  
+We simulate the program 1000 times. From the program output, the resulting average total value of Ruby Ring is 1275  
+the average total value of Jade Ring is 1172  
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/hypothesis3-JadeRing--1000.png)  
+It is hard to see the result from the picture, and those two results are fairly close.  
+Thus we have run it for sevral time. In every time, the total value of Ruby Ring is greater than the Jade Ring.  
+We accept the hypothsis.  
+## Hypothesis 3
+`When reaching level 5 of mining skills, it is more rewarding to choose miner than geologist.`  
+  
+Method: fixed Parameter: Skill level 5, Player equipped with Sneakers and Infinity Dagger    
+Variables: simulation 500 times of two professions, Miner and geologist. We compare the resulting total gold value of two different professions. Finally we choose either the miner or geologist to be the more rewarding profession.  
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/img/%E6%88%AA%E5%B1%8F2022-12-10%2010.41.45.png)
+We simulate the program 500 times. From the program output, the resulting average total value of Miner is 3593  
+the average total value of Geologist is 4262  
+From the histogram, we can see that the Geologist profession can produce more values than the Miner  
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/hypothesis2-Geologist--500.png)
+## Presentation
+see Video [here](https://mediaspace.illinois.edu/media/t/1_ikmjbvxq)
