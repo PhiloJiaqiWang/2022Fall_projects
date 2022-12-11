@@ -150,6 +150,12 @@ uniformly distributed between [min_damage, max_damage]
 - If the game ends, the items the player gained in that level will be proportional to the monsters the player killed.
 - The attack damage will conform uniform distribution between min damage and max damage.
 - The numbers of rocks in every floor will conform uniform distribution between [30, 50], and monsters between [5,10]
+## Validating
+- Statistical Convergence  
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/hypothesis1-1--1000.png)  
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/TotalValue.png)
+- Correlation (damage and total value)  
+![Image text](https://github.com/PhiloJiaqiWang/2022Fall_projects/blob/main/DamagaAndValue.png)
 ## Hypothesis 1
 `When equipped with the infinity dagger, it is more rewarding to start from 80th floor than from 1st  floor.`  
   
