@@ -824,6 +824,7 @@ def if_convergent(running_num):
     x_axis = []
     result_lis = []
     for i in range(1, running_num):
+        print(i)
         player_tp.set_player_att([30, 40, 0, 0, 0, 0, 0, 0])
         result_lis.append(simulation(player_tp, 1, i, "Total Value change", False, profession=None))
         x_axis.append(i)
@@ -831,7 +832,7 @@ def if_convergent(running_num):
     print(result_lis)
     plt.plot(x_axis, result_lis, linestyle='dotted')
     plt.ylabel("Total Value", fontsize=12)
-    plt.xlabel("Running Time", fontsize=12)
+    plt.xlabel("Running Num", fontsize=12)
     plt.savefig("TotalValue")
     return result_lis
 
@@ -866,20 +867,20 @@ def test_correlation_damage():
 if __name__ == '__main__':
 
     # test_correlation_damage()
-    # if_convergent(500)
+     if_convergent(100)
     ############
     # hypothesis1 #
     # When equipped with the infinity dagger, it is more rewarding to start from 80th floor than from 0 floor. #
     ############
-    player1 = Player()
-    equ1 = 'Sneakers'
-    equ2 = "Infinity Dagger"
-    player1.set_player_equipments([equ1, equ2, '', ''])
-    player1.generate_att_from_equip()
-    s1 = simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
-    s2 = simulation(player1, 80, 1000, "hypothesis1-80", True, profession=None)
-    print("The average value the player gained in this hypothesis1-1 is:" + str(s1))
-    print("The average value the player gained in this hypothesis1-80 is:" + str(s2))
+    # player1 = Player()
+    # equ1 = 'Sneakers'
+    # equ2 = "Infinity Dagger"
+    # player1.set_player_equipments([equ1, equ2, '', ''])
+    # player1.generate_att_from_equip()
+    # s1 = simulation(player1, 1, 1000, "hypothesis1-1", True, profession=None)
+    # s2 = simulation(player1, 80, 1000, "hypothesis1-80", True, profession=None)
+    # print("The average value the player gained in this hypothesis1-1 is:" + str(s1))
+    # print("The average value the player gained in this hypothesis1-80 is:" + str(s2))
     ############
 
     ############
